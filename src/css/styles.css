@@ -1,18 +1,34 @@
 .body {
+    width: auto;
+    height: auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: space-between;
+    background-color: green;
   }
 
 .row {
-    margin: 5px;
+    margin: 50px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    width: auto;
 }
 
-.player {
-    margin: 5px;
+.box {
+    margin: 20px;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    width: fit-content;
+    border-radius: 5px;
+    background-color: #ffffff32;
+    border-width: 3px;
+    border-color: black;
+    border-style: solid;
+    justify-content: center;
 }
 
-.dealer {
-    margin: 10px;
-}
+/* Writing CSS makes me want to tear my head off*/
