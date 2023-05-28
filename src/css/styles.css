@@ -6,9 +6,13 @@
   }
 
 .row {
-
+    margin: 5px;
 }
 
 .player {
+    margin: 5px;
+}
 
+.dealer {
+    margin: 10px;
 }
