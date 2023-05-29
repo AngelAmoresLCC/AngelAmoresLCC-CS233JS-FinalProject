@@ -1,94 +1,180 @@
-class Card
+import Stack from "./utilities";
+
+//This file includes Hands, the Deck, and Cards themselves
+
+export class Hand
 {
-    constructor(cardValue, cardSuit)
+    constructor()
     {
+        this.hand = [];
+        this.hasLiveAce = false;
+    }
+
+    IsBlackjack()
+    {
+        return this.GetHandValue() == 21 && this.hand.length == 2;
+    }
+
+    CheckCard(index)
+    {
+        return this.hand[index];
+    }
+
+    AddCard(card)
+    {
+        this.hand.length = card;
+    }
+
+    GetHandValue()
+    {
+        let handValue = 0;
+        let numBigAces = 0;
+        for (const card of hand)
+        {
+            if (card.IsAce())
+            {
+                if (handValue <= 10)
+                {
+                    handValue += 11;
+                    numBigAces++;
+                }
+                else
+                    handValue += 1;
+            }
+            else if (card.Value >= 11)
+            {
+                handValue += 10;
+            }
+            else
+            {
+                handValue += card.value;
+            }
+        }
+        while (numBigAces > 0 && handValue > 21)
+        {
+            handValue -= 10;
+            numBigAces--;
+        }
+        hasLiveAce = numBigAces > 0;
+        return handValue;
+    }
+
+    GetHardValue()
+    {
+        let handValue = 0;
+        for (const card of hand)
+        {
+            if (card.IsFaceCard())
+                handValue += 10;
+            else
+                handValue += card.value;
+        }
+        return handValue;
+    }
+
+    IsBusted()
+    {
+        return this.GetHandValue > 21;
+    }
+
+    HasDoubles()
+    {
+        return this.hand.length == 2 && (this.hand[0].HasMatchingValue(this.hand[1]) || (this.hand[0].IsFaceCard || this.hand[0].value == 10) && (this.hand[1].IsFaceCard || this.hand[1].value == 10));
+    }
+
+    HandImageArray()
+    {
+        let images = []
+        for (const card of this.hand) {
+            images[images.length] = card.GetImageString();
+        }
+        return images;
+    }
+}
+
+export class Deck {
+    constructor() {
+        this.deck = new Stack();
+        for (let i = 0; i < 52; i++)
+        {
+            deck.Push(new Card(i % 13 + 1, i % 4 + 1));
+        }
+        this.Shuffle();
+    }
+
+    Shuffle() {
+        deckArray = deck.ToArray();
+        deck.Clear();
+        for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--)
+        {
+            let swapTarget = Math.floor(Math.random() * (swapIndex + 1));
+            (deckArray[swapTarget], deckArray[swapIndex]) = (deckArray[swapIndex], deckArray[swapTarget]);
+        }
+        for(const card of deckArray)
+        {
+            deck.Push(card);
+        }
+    }
+
+    Draw() {
+        return this.deck.Pop();
+    }
+}
+
+export class Card {
+    constructor(cardValue, cardSuit) {
         this.value = cardValue;
         this.suit = cardSuit;
-        this.values = [ "", "a", "2", "3", "4", "5", "6", "7", "8", "9", "t", "j", "q", "k" ];
-        this.suits = [ "", "c", "d", "h", "s" ];
-        this.Value = this.Value.bind(this);
-        this.Suit = this.Suit.bind(this);
-        this.HasMatchingSuit = this.HasMatchingSuit.bind(this);
-        this.HasMatchingValue = this.HasMatchingValue.bind(this);
-        this.IsAce = this.IsAce.bind(this);
-        this.IsFaceCard = this.IsFaceCard.bind(this);
-        this.IsBlack = this.IsBlack.bind(this);
-        this.IsRed = this.IsRed.bind(this);
-        this.IsClub = this.IsClub.bind(this);
-        this.IsDiamond = this.IsDiamond.bind(this);
-        this.IsHeart = this.IsHeart.bind(this);
-        this.IsSpade = this.IsSpade.bind(this);
-        this.GetImageString = this.GetImageString.bind(this);
-        this.ToString = this.ToString.bind(this);
+        this.nextCard = null;
+        this.values = ["", "a", "2", "3", "4", "5", "6", "7", "8", "9", "t", "j", "q", "k"];
+        this.suits = ["", "c", "d", "h", "s"];
     }
 
-    Value()
-    {
-        return this.value;
+    HasMatchingSuit(otherCard) {
+        return this.suit == otherCard.suit;
     }
 
-    Suit()
-    {
-        return this.suit;
+    HasMatchingValue(otherCard) {
+        return this.value == otherCard.value;
     }
 
-    HasMatchingSuit(otherCard)
-    {
-        return this.suit == otherCard.Suit;
-    }
-
-    HasMatchingValue(otherCard)
-    {
-        return this.value == otherCard.Value;
-    }
-
-    IsAce()
-    {
+    IsAce() {
         return this.value == 1;
     }
 
-    IsFaceCard()
-    {
+    IsFaceCard() {
         return this.value >= 11;
     }
 
-    IsBlack()
-    {
+    IsBlack() {
         return this.suit == 1 || this.suit == 3;
     }
 
-    IsRed()
-    {
+    IsRed() {
         return !this.IsBlack();
     }
 
-    IsClub()
-    {
+    IsClub() {
         return this.suit == 1;
     }
 
-    IsDiamond()
-    {
+    IsDiamond() {
         return this.suit == 2;
     }
 
-    IsHeart()
-    {
+    IsHeart() {
         return this.suit == 3;
     }
 
-    IsSpade()
-    {
+    IsSpade() {
         return this.suit == 4;
     }
 
-    GetImageString()
-    {
+    GetImageString() {
         return "cards/" + this.values[this.value] + this.suits[this.suit] + ".jpg";
     }
 
-    ToString()
-    {
+    ToString() {
         return this.values[this.value] + " of " + this.suits[this.suit];
     }
 }
