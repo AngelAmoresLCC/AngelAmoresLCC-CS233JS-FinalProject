@@ -17,7 +17,8 @@ export class Hand {
     }
 
     AddCard(card) {
-        this.hand.length = card;
+        this.hand[this.hand.length] = card;
+        this.GetHandValue();
     }
 
     GetHandValue() {
@@ -43,7 +44,7 @@ export class Hand {
             handValue -= 10;
             numBigAces--;
         }
-        hasLiveAce = numBigAces > 0;
+        this.hasLiveAce = numBigAces > 0;
         return handValue;
     }
 
@@ -63,7 +64,7 @@ export class Hand {
     }
 
     HasDoubles() {
-        return this.hand.length == 2 && (this.hand[0].HasMatchingValue(this.hand[1]) || (this.hand[0].IsFaceCard || this.hand[0].value == 10) && (this.hand[1].IsFaceCard || this.hand[1].value == 10));
+        return this.hand.length == 2 && (this.hand[0].HasMatchingValue(this.hand[1]) || (this.hand[0].IsFaceCard() || this.hand[0].value == 10) && (this.hand[1].IsFaceCard() || this.hand[1].value == 10));
     }
 
     HandImageArray() {

@@ -35,6 +35,10 @@ export class Player {
         return this.canDD = this.coins >= this.currentBet && this.canDD;
     }
 
+    CanSplit() {
+        return this.CanDD() && this.hand.HasDoubles()
+    }
+
     EmptyHand() {
         hand = new Hand();
         splitHand = null;
@@ -71,7 +75,7 @@ export class Player {
 
                 return false;
             case this.P:
-                if (this.CanDD() && this.hand.HasDoubles()) {
+                if (this.CanSplit()) {
                     this.coins -= this.currentBet;
                     console.log(this.name + " has split their hand!");
                     console.log("Current coins: " + this.coins);

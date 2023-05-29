@@ -10,6 +10,22 @@ export class Dealer
         this.players = [];
         this.hand = new Hand();
     }
+
+    ResetDealer()
+    {
+        this.deck = new Deck();
+        this.hand = new Hand();
+    }
+
+    DealerTurn()
+    {
+        
+    }
+
+    Deal(hand)
+    {
+        hand.AddCard(this.deck.Draw());
+    }
 }
 
 export class ComputerPlayer
