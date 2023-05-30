@@ -2,68 +2,55 @@ import Stack from "./utilities";
 
 //This file includes Hands, the Deck, and Cards themselves
 
-export class Hand
-{
-    constructor()
-    {
+export class Hand {
+    constructor() {
         this.hand = [];
         this.hasLiveAce = false;
     }
 
-    IsBlackjack()
-    {
+    IsBlackjack() {
         return this.GetHandValue() == 21 && this.hand.length == 2;
     }
 
-    CheckCard(index)
-    {
+    CheckCard(index) {
         return this.hand[index];
     }
 
-    AddCard(card)
-    {
-        this.hand.length = card;
+    AddCard(card) {
+        this.hand[this.hand.length] = card;
+        this.GetHandValue();
     }
 
-    GetHandValue()
-    {
+    GetHandValue() {
         let handValue = 0;
         let numBigAces = 0;
-        for (const card of hand)
-        {
-            if (card.IsAce())
-            {
-                if (handValue <= 10)
-                {
+        for (const card of hand) {
+            if (card.IsAce()) {
+                if (handValue <= 10) {
                     handValue += 11;
                     numBigAces++;
                 }
                 else
                     handValue += 1;
             }
-            else if (card.Value >= 11)
-            {
+            else if (card.Value >= 11) {
                 handValue += 10;
             }
-            else
-            {
+            else {
                 handValue += card.value;
             }
         }
-        while (numBigAces > 0 && handValue > 21)
-        {
+        while (numBigAces > 0 && handValue > 21) {
             handValue -= 10;
             numBigAces--;
         }
-        hasLiveAce = numBigAces > 0;
+        this.hasLiveAce = numBigAces > 0;
         return handValue;
     }
 
-    GetHardValue()
-    {
+    GetHardValue() {
         let handValue = 0;
-        for (const card of hand)
-        {
+        for (const card of hand) {
             if (card.IsFaceCard())
                 handValue += 10;
             else
@@ -72,18 +59,15 @@ export class Hand
         return handValue;
     }
 
-    IsBusted()
-    {
+    IsBusted() {
         return this.GetHandValue > 21;
     }
 
-    HasDoubles()
-    {
-        return this.hand.length == 2 && (this.hand[0].HasMatchingValue(this.hand[1]) || (this.hand[0].IsFaceCard || this.hand[0].value == 10) && (this.hand[1].IsFaceCard || this.hand[1].value == 10));
+    HasDoubles() {
+        return this.hand.length == 2 && (this.hand[0].HasMatchingValue(this.hand[1]) || (this.hand[0].IsFaceCard() || this.hand[0].value == 10) && (this.hand[1].IsFaceCard() || this.hand[1].value == 10));
     }
 
-    HandImageArray()
-    {
+    HandImageArray() {
         let images = []
         for (const card of this.hand) {
             images[images.length] = card.GetImageString();
@@ -95,8 +79,7 @@ export class Hand
 export class Deck {
     constructor() {
         this.deck = new Stack();
-        for (let i = 0; i < 52; i++)
-        {
+        for (let i = 0; i < 52; i++) {
             deck.Push(new Card(i % 13 + 1, i % 4 + 1));
         }
         this.Shuffle();
@@ -105,13 +88,11 @@ export class Deck {
     Shuffle() {
         deckArray = deck.ToArray();
         deck.Clear();
-        for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--)
-        {
+        for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--) {
             let swapTarget = Math.floor(Math.random() * (swapIndex + 1));
             (deckArray[swapTarget], deckArray[swapIndex]) = (deckArray[swapIndex], deckArray[swapTarget]);
         }
-        for(const card of deckArray)
-        {
+        for (const card of deckArray) {
             deck.Push(card);
         }
     }

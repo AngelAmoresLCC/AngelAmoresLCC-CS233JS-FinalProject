@@ -41,11 +41,13 @@ export class Stack {
 
     ToArray() {
         let array = [];
-        while(this.first)
-        {
+        while (this.first) {
             array[array.length] = this.Pop();
         }
         array.reverse();
+        for (let item of array) {
+            this.Push(item);
+        }
         return array;
     }
 
