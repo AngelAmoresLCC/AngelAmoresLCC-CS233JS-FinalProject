@@ -94,7 +94,10 @@ export class Player {
         }
     }
 
-    SplitTurn();
+    SplitTurn()
+    {
+        
+    }
 
     MakeBet(betAmount) {
         if (betAmount <= this.coins) {

@@ -8,17 +8,23 @@
     background-color: green;
   }
 
-.row {
+/*.row {
     margin: 50px;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: space-between;
-    width: auto;
-}
+    align-content: center;
+    align-self: center;
+    width: fit-content;
+    margin: auto;
+}*/
 
 .box {
     margin: 20px;
+    margin-left: 100px;
+    margin-right: 100px;
+    padding: 10px;
     text-align: center;
     font-size: larger;
     font-weight: bold;

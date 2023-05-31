@@ -1,4 +1,4 @@
-import Stack from "./utilities";
+import { Stack } from "./utilities";
 
 //This file includes Hands, the Deck, and Cards themselves
 
@@ -90,7 +90,7 @@ export class Deck {
         deck.Clear();
         for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--) {
             let swapTarget = Math.floor(Math.random() * (swapIndex + 1));
-            (deckArray[swapTarget], deckArray[swapIndex]) = (deckArray[swapIndex], deckArray[swapTarget]);
+            [deckArray[swapTarget], deckArray[swapIndex]] = [deckArray[swapIndex], deckArray[swapTarget]];
         }
         for (const card of deckArray) {
             deck.Push(card);

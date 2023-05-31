@@ -16,46 +16,75 @@
 
     <div id="app-body">
         <div class="body">
-            <div class="container"> 
+            <div class="container-fluid">
                 <!--I hate writing HTML and CSS, why must it be so clunky and awkward. 
                 This doesn't do what I want it to do, but I'm keeping it to show I tried.-->
+                <div class="row d-flex justify-content-center">
+                    <div class="col-md-6">
+                        This column is centered <!--NO IT'S NOT WHY IS IT NOT CENTERED-->
+                    </div>
+                </div>
+                <div class="row d-flex justify-content-center">
+                    <div class="col-sm-4" style="visibility: visible;" id="waiting">
+                        <div class="box">
+                            <span>This box will have the user's </span><br>
+                            <span>position in the waiting queue</span>
+                            <br>
+                            <span>Nothing here yet</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4" id="dealer">
+                        <div class="box">
+                            <span>This box will be the dealer</span>
+                        </div>
+                    </div>
+                    <div class="col-sm-4"></div>
+                </div>
                 <div class="row">
-                    <div class="box" style="visibility: visible;" id="waiting">
-                        <span>This box will have the user's position in the waiting queue</span>
-                        <br>
-                        <span>Nothing here yet</span>
+                    <div class="col-sm-4"></div>
+                    <div class="col-sm-4" id="playerHand">
+                        <div class="box">
+                            <span>This box will be the player's hand</span>
+                        </div>
                     </div>
-                    <div class="box" id="dealer">
-                        <span>This box will be the dealer</span>
+                    <div class="col-sm-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4" id="player1">
+                        <div class="box">
+                            <span>This box will be for player 1</span>
+                        </div>
                     </div>
-                    <div class="box" id="actions">
-                        <span>This box will have buttons for the user's actions</span>
+
+                    <div class="col-sm-4" id="player2">
+                        <div class="box">
+                            <span>This box will be for player 2</span>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4" id="player3">
+                        <div class="box">
+                            <span>This box will be for player 3</span>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="box" id="player1">
-                        <span>This box will be for player 1</span>
+                    <div class="col-sm-4" id="player4">
+                        <div class="box">
+                            <span>This box will be for player 4</span>
+                        </div>
                     </div>
 
-                    <div class="box" id="player2">
-                        <span>This box will be for player 2</span>
+                    <div class="col-sm-4" id="player5">
+                        <div class="box">
+                            <span>This box will be for player 5</span>
+                        </div>
                     </div>
 
-                    <div class="box" id="player3">
-                        <span>This box will be for player 3</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="box" id="player4">
-                        <span>This box will be for player 4</span>
-                    </div>
-
-                    <div class="box" id="player5">
-                        <span>This box will be for player 5</span>
-                    </div>
-
-                    <div class="box" id="player6">
-                        <span>This box will be for player 6</span>
+                    <div class="col-sm-4" id="player6">
+                        <div class="box">
+                            <span>This box will be for player 6</span>
+                        </div>
                     </div>
                 </div>
             </div>
