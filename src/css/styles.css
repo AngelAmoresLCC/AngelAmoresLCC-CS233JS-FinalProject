@@ -5,7 +5,7 @@
     flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-between;
-    background-color: green;
+    background-color: darkgreen;
   }
 
 /*.row {
@@ -22,19 +22,30 @@
 
 .box {
     margin: 20px;
-    margin-left: 100px;
-    margin-right: 100px;
+    margin-left: 0px;
+    margin-right: 0px;
     padding: 10px;
     text-align: center;
     font-size: larger;
     font-weight: bold;
-    width: fit-content;
+    min-width: 50%;
+    max-width: fit-content;
     border-radius: 5px;
-    background-color: #ffffff32;
+    background-color: #ffffff99;
     border-width: 3px;
     border-color: black;
     border-style: solid;
     justify-content: center;
+}
+
+.active-player {
+    border-color: gold;
+    border-width: 5px;
+}
+
+.busted-player {
+    border-color: darkred;
+    border-width: 5px;
 }
 
 /* Writing CSS makes me want to tear my head off*/

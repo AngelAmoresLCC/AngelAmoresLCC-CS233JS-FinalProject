@@ -14,6 +14,7 @@ export class Table {
         }
         this.dealer.players = this.players;
         this.currentPlayer = 0;
+        this.isBetting = true;
         this.displayStates = [];
         this.UpdateDisplayStates();
     }
@@ -37,6 +38,7 @@ export class Table {
 
     EndRound() {
         this.dealer.DealerTurn();
+        this.currentPlayer = "dealer";
         this.PayWinnings();
         while (this.FirstOpenSlot != 0) {
             this.queue.CheckQueue();
@@ -96,7 +98,8 @@ export class Table {
     UpdateDisplayStates() {
         for (let i = 0; i < 7; i++) {
             if (i == 0) {
-                this.displayStates[i] = {
+                this.displayStates[0] = {
+                    id: "dealer",
                     busted: this.dealer.hand.IsBusted(),
                     cards: this.dealer.hand.HandImageArray(),
                 }
