@@ -36,7 +36,7 @@ export class Table {
     }
 
     PlayerBet(betAmount, playerID) {
-        if (this.players[playerID - 1].MakeBet(betAmount)) {
+        if (this.GetPlayer(playerID).MakeBet(betAmount)) {
             this.numBets++;
             this.UpdateDisplayStates();
             return true;
@@ -45,23 +45,10 @@ export class Table {
     }
 
     PlayerAction(action, playerID) {
-        if (playerID === this.currentPlayer) {
-            switch (action) {
-                case "hit":
-                    break;
-                case "stand":
-                    break;
-                case "double":
-                    break;
-                case "split":
-                    break;
-                default:
-                    break;
-            }
-        }
-        else {
-            return false;
-        }
+        if (playerID === this.currentPlayer)
+            if (this.GetPlayer(playerID).HandleChoice(action))
+                return true;
+        return false;
     }
 
     FirstOpenSlot() {
@@ -72,24 +59,45 @@ export class Table {
         return 0;
     }
 
-    ContinueRound() {
-        do {
-            this.currentPlayer++;
-            if (this.currentPlayer >= this.players.length) {
-                this.EndRound();
-            }
-            this.UpdateDisplayStates();
-        } while (!this.players[this.currentPlayer - 1].active)
-    }
-
-    EndRound() {
-        this.dealer.DealerTurn();
-        this.currentPlayer = "dealer";
-        this.PayWinnings();
+    BeginRound() {
         while (this.FirstOpenSlot != 0) {
             this.queue.CheckQueue();
         }
         this.currentPlayer = 0;
+        this.UpdateDisplayStates();
+        this.GetBets();
+        for (let i = 0; i < 2; i++) {
+            for (let player of this.players) {
+                if (player.active) {
+                    this.dealer.Deal(player.hand);
+                    this.UpdateDisplayStates();
+                }
+            }
+        }
+        this.UpdateDisplayStates();
+        this.ContinueRound();
+    }
+
+    ContinueRound() {
+        this.currentPlayer++;
+        this.UpdateDisplayStates();
+        if (this.currentPlayer >= this.players.length)
+            this.EndRound();
+    }
+
+    EndRound() {
+        this.currentPlayer = "dealer";
+        this.UpdateDisplayStates();
+        while (!this.dealer.hand.IsBusted() && this.dealer.hand.GetHandValue() < 17 || (this.dealer.hand.GetHandValue() == 17 && this.dealer.hand.hasLiveAce)) {
+            this.dealer.Deal(this.dealer.hand);
+            this.UpdateDisplayStates();
+        }
+        this.currentPlayer = 0;
+        this.UpdateDisplayStates();
+        this.PayWinnings();
+        setTimeout(() => {
+            this.BeginRound();
+        }, 3000);
     }
 
     PayWinnings() {
@@ -136,12 +144,6 @@ export class Table {
         this.UpdateDisplayStates();
     }
 
-    //When this is called, every user interface attempts to update the displayed information
-    //I don't actually know how to do this, but I know it should be possible
-    UpdateDisplay(updateID = "all") {
-        return updateID;
-    }
-
     UpdateDisplayStates() {
         for (let i = 0; i < 7; i++) {
             if (i == 0) {
@@ -168,7 +170,7 @@ export class Table {
                 }
             }
         }
-        this.displayID = Math.random()
+        this.displayID = Math.random();
     }
 
     GetDisplayState(index, simple = true) {
@@ -191,12 +193,16 @@ export class Table {
         }
     }
 
+    GetPlayer(playerID) {
+        return this.players[playerID - 1];
+    }
+
     //Called by user interface, checks if the request is viable and passes it to the corresponding player if so
-    RequestAction(playerID, action) {
+    RequestAction(action, playerID) {
         if (playerID == this.currentPlayer) {
-            if (this.players[playerID + 1].HandleChoice(action)) {
-                this.UpdateDisplay("player" + playerID);
-                if (action == "stand" || action == "doubleDown") {
+            if (this.GetPlayer(playerID).HandleChoice(action)) {
+                this.UpdateDisplayStates();
+                if (action == "stand" || action == "doubleDown" || this.GetPlayer(playerID).hand.IsBusted()) {
                     this.ContinueRound();
                 }
             }
@@ -205,7 +211,7 @@ export class Table {
 
     //Called by player, instructs dealer to deal a card to that player
     RequestDeal(playerID) {
-        this.dealer.Deal(this.players[playerID + 1].hand);
+        this.dealer.Deal(this.GetPlayer(playerID).hand);
         return;
     }
 }
@@ -219,15 +225,23 @@ export class QueueHandler {
 
     AddUser(user) {
         user.table = this.tableRef;
+        user.CheckUpdateDisplay();
+        user.setInterval(() => {
+            user.CheckUpdateDisplay();
+        }, 200);
         this.users[this.users.length] = user;
     }
 
     CheckQueue() {
+        while (this.users[0] === null) {
+            this.users.splice(0, 1);
+        }
         if (this.users.length > 0) {
             let slot = tableRef.FirstOpenSlot();
             if (slot > 0) {
                 this.users[0].playerID = slot;
                 this.users[0].SetupPlay();
+                this.tableRef.GetPlayer(slot).ChangeActiveness(true);
                 this.users.splice(0, 1);
                 this.CheckQueue();
             }

@@ -37,12 +37,13 @@
             <div class="row d-flex justify-content-center">
                 <div class="col-sm-4 d-flex justify-content-center">
                     <div class="box" id="user">
-                        <span id="user-name">User Name</span><br>
+                        <input id="user-name" value="User Name" maxlength="16"
+                            style="text-align:center; background-color:inherit; width:fit-content;"></input><br>
                         <!--
-                            <div id="user-hand">
-                                This has more space to work with, but I still don't know how I'll format this
-                            </div>
-                            -->
+                        <div id="user-hand">
+                            This has more space to work with, but I still don't know how I'll format this
+                        </div>
+                        -->
                         Hand: <span id="user-hand"></span><br> <!--This will become a hand value summary-->
                         <div id="user-split" style="display:none;">
                             Split hand: <span id="user-splitHand"></span>
@@ -52,9 +53,9 @@
                         <div id="actions" style="display:block;"> <!--Toggles to display:none to hide options-->
                             <hr>
                             <button id="hit" type="button" class="btn btn-success"
-                                style="width:45%; height:3em;">Hit</button>
+                                style="width:45%; height:4em;">Hit</button>
                             <button id="stand" type="button" class="btn btn-danger"
-                                style="width:45%; height:3em;">Stand</button>
+                                style="width:45%; height:4em;">Stand</button>
                             <br>
                             <button id="doubleDown" type="button" class="btn btn-primary"
                                 style="margin-top: 5px; width:45%; height:4em; display:inline;">Double down</button>
@@ -80,10 +81,10 @@
                     <div class="box active-player" id="player1">
                         <span id="player1-name">Player 1</span><br>
                         <!--
-                            <div id="player1-hand">
-                                Still don't know how I'll format this
-                            </div>
-                            -->
+                        <div id="player1-hand">
+                            Still don't know how I'll format this
+                        </div>
+                        -->
                         Hand: <span id="player1-hand"></span><br> <!--This will become a hand value summary-->
                         <!--Temporary, for testing purposes before final UI-->
                         <div id="player1-split" style="display:none;">

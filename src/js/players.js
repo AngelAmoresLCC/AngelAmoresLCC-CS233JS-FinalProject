@@ -7,7 +7,7 @@ export class Player {
     constructor(table, dealer, playerName, playerID) {
         this.H = 'hit';
         this.S = 'stand';
-        this.D = 'doubleDown';
+        this.D = 'double';
         this.P = 'split';
         this.hand = null;
         this.splitHand = null;
@@ -20,6 +20,19 @@ export class Player {
         this.tableRef = table;
         this.coins = 1000;
         this.currentBet = 0;
+    }
+
+    ChangeActiveness(newActive) {
+        if (active && newActive) { }
+        else {
+            active = newActive;
+            if (active)
+            {
+                this.coins = 1000;
+                this.currentBet = 0;
+                this.EmptyHand;
+            }
+        }
     }
 
     IsSplit() {
@@ -94,9 +107,8 @@ export class Player {
         }
     }
 
-    SplitTurn()
-    {
-        
+    SplitTurn() {
+
     }
 
     MakeBet(betAmount) {

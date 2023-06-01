@@ -13,15 +13,16 @@ class Interface {
         this.betButton = document.getElementById("bet");
         this.table = null;
         this.displayID = -1;
+        window.onbeforeunload = this.Leave();
     }
 
     SetupPlay(playerID) {
         this.playerID = playerID;
         document.getElementById(`player${playerID}`).visibility = "hidden";
         this.hitButton.addEventListener("click", this.Action.bind(this, "hit"));
-        this.standButton.addEventListener("click", this.Action.bind(this, "hit"));
-        this.doubleButton.addEventListener("click", this.Action.bind(this, "hit"));
-        this.splitButton.addEventListener("click", this.Action.bind(this, "hit"));
+        this.standButton.addEventListener("click", this.Action.bind(this, "stand"));
+        this.doubleButton.addEventListener("click", this.Action.bind(this, "double"));
+        this.splitButton.addEventListener("click", this.Action.bind(this, "split"));
     }
 
     MakeBet() {
@@ -36,9 +37,7 @@ class Interface {
     }
 
     Action(action) {
-        if (this.table.PlayerAction(action, this.playerID)) {
-
-        }
+        this.table.RequestAction(action, this.playerID)
     }
 
     CheckUpdateDisplay() {
@@ -65,8 +64,11 @@ class Interface {
                 if (id === this.playerID) {
                     id = "user";
                     this.betInput.max = info.coins;
-                    this.doubleButton.display = info.canDD ? "inline" : "none";
-                    this.splitButton = info.canSplit ? "inline" : "none";
+                    this.doubleButton.style.display = info.canDD ? "inline" : "none";
+                    this.doubleButton.prop('disabled', !info.canDD);
+                    this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
+                    this.splitButton.style.display = info.canSplit ? "inline" : "none";
+                    this.splitButton.prop('disabled', !info.canSplit);
                 }
                 let playerString = `player${id}`;
                 if (info.busted)
@@ -98,9 +100,17 @@ class Interface {
                 */
                 document.getElementById(playerString).style.visibility = info.active ? "visible" : "hidden";
             }
+            this.hitButton.prop('disabled', (this.table.currentPlayer !== this.playerID));
+            this.standButton.prop('disabled', (this.table.currentPlayer !== this.playerID));
             this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
             this.betting.style.display = this.table.isBetting ? "block" : "none";
         }
         this.displayID = this.table.displayID;
+    }
+
+    Leave() {
+        if (this.table !== null) {
+            this.table.GetPlayer(this.playerID).ChangeActiveness(false);
+        }
     }
 }
