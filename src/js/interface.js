@@ -1,4 +1,4 @@
-import Table from "./blackjack";
+import { Table } from "./blackjack";
 
 class Interface {
     constructor() {
@@ -12,11 +12,39 @@ class Interface {
         this.betInput = document.getElementById("userBet");
         this.betButton = document.getElementById("bet");
         this.table = null;
+        this.displayID = -1;
     }
 
     SetupPlay(playerID) {
         this.playerID = playerID;
         document.getElementById(`player${playerID}`).visibility = "hidden";
+        this.hitButton.addEventListener("click", this.Action.bind(this, "hit"));
+        this.standButton.addEventListener("click", this.Action.bind(this, "hit"));
+        this.doubleButton.addEventListener("click", this.Action.bind(this, "hit"));
+        this.splitButton.addEventListener("click", this.Action.bind(this, "hit"));
+    }
+
+    MakeBet() {
+        if (this.table.PlayerBet(this.betInput.value, this.playerID)) {
+            this.betInput.value = 10;
+            this.betting.style.display = "none";
+            this.betInput.classList.remove("is-invalid");
+        }
+        else {
+            this.betInput.classList.add("is-invalid");
+        }
+    }
+
+    Action(action) {
+        if (this.table.PlayerAction(action, this.playerID)) {
+
+        }
+    }
+
+    CheckUpdateDisplay() {
+        if (this.displayID !== this.table.displayID) {
+            this.UpdateDisplay(this.table.displayStates);
+        }
     }
 
     UpdateDisplay(displayInfoArray) {
@@ -51,10 +79,12 @@ class Interface {
                         document.getElementById(playerString).classList.remove("current-player");
                 }
                 document.getElementById(playerString + "-name").innerHTML = info.name;
-                //document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
                 document.getElementById(playerString + "-coins").innterHTML = info.coins;
+                //Since displaying the hands (including the split hand) isn't currently fleshed out
+                //This is all commented out
                 /*
+                document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
                 if (info.isSplit)
                 {
                     document.getElementById(playerString + "-split").style.display = "visible";
@@ -71,5 +101,6 @@ class Interface {
             this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
             this.betting.style.display = this.table.isBetting ? "block" : "none";
         }
+        this.displayID = this.table.displayID;
     }
 }

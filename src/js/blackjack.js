@@ -14,9 +14,54 @@ export class Table {
         }
         this.dealer.players = this.players;
         this.currentPlayer = 0;
+        this.numBets = 0;
         this.isBetting = true;
         this.displayStates = [];
+        this.displayID = 0;
         this.UpdateDisplayStates();
+    }
+
+    GetBets() {
+        this.isBetting = true;
+        this.numBets = 0;
+        let numActivePlayers = 0;
+        for (let player of this.players) {
+            if (player.active)
+                numActivePlayers++;
+        }
+        this.UpdateDisplayStates();
+        while (numBets <= numActivePlayers) { }
+        this.isBetting = false;
+        this.UpdateDisplayStates();
+    }
+
+    PlayerBet(betAmount, playerID) {
+        if (this.players[playerID - 1].MakeBet(betAmount)) {
+            this.numBets++;
+            this.UpdateDisplayStates();
+            return true;
+        }
+        return false;
+    }
+
+    PlayerAction(action, playerID) {
+        if (playerID === this.currentPlayer) {
+            switch (action) {
+                case "hit":
+                    break;
+                case "stand":
+                    break;
+                case "double":
+                    break;
+                case "split":
+                    break;
+                default:
+                    break;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
     FirstOpenSlot() {
@@ -33,6 +78,7 @@ export class Table {
             if (this.currentPlayer >= this.players.length) {
                 this.EndRound();
             }
+            this.UpdateDisplayStates();
         } while (!this.players[this.currentPlayer - 1].active)
     }
 
@@ -87,6 +133,7 @@ export class Table {
             player.SetCurrentBet(0);
             player.EmptyHand();
         }
+        this.UpdateDisplayStates();
     }
 
     //When this is called, every user interface attempts to update the displayed information
@@ -121,6 +168,7 @@ export class Table {
                 }
             }
         }
+        this.displayID = Math.random()
     }
 
     GetDisplayState(index, simple = true) {
@@ -167,6 +215,11 @@ export class QueueHandler {
     constructor(table) {
         this.users = [];
         this.tableRef = table;
+    }
+
+    AddUser(user) {
+        user.table = this.tableRef;
+        this.users[this.users.length] = user;
     }
 
     CheckQueue() {
