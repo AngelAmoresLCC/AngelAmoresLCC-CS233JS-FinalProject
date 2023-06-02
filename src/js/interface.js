@@ -1,6 +1,4 @@
-import { Table } from "./blackjack";
-
-class Interface {
+export class Interface {
     constructor() {
         this.playerID = 0;
         this.actions = document.getElementById("actions");
@@ -11,7 +9,13 @@ class Interface {
         this.betting = document.getElementById("betting");
         this.betInput = document.getElementById("userBet");
         this.betButton = document.getElementById("bet");
+        this.queueButton = document.getElementById("queue");
+        this.queueButton.addEventListener("click", this.EnterQueue.bind(this));
         this.table = null;
+        this.queueRef = null;
+        this.queuePos = -1;
+        this.queueTimer = null;
+        this.updateTimer = null;
         this.displayID = -1;
         window.onbeforeunload = this.Leave();
     }
@@ -40,16 +44,20 @@ class Interface {
         this.table.RequestAction(action, this.playerID)
     }
 
+    //Checks if the current displayID matches the table's displayID, and updates the display if not
     CheckUpdateDisplay() {
         if (this.displayID !== this.table.displayID) {
             this.UpdateDisplay(this.table.displayStates);
         }
     }
 
+    //Updates all displayed information on the page, then updates the current displayID
+    //TODO: Comment each part of this monstrosity
     UpdateDisplay(displayInfoArray) {
         for (const info of displayInfoArray) {
             let id = info.id;
             if (id === "dealer") {
+                let playerString = id;
                 if (info.busted)
                     document.getElementById(playerString).classList.add("busted-player");
                 else {
@@ -98,19 +106,70 @@ class Interface {
                     document.getElementById(playerString + "-splitHand").innerHTML = "";
                 }
                 */
-                document.getElementById(playerString).style.visibility = info.active ? "visible" : "hidden";
+                document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
+                if (!info.active)
+                    document.getElementById(playerString).classList.add("inactive-player");
+                else
+                    document.getElementById(playerString).classList.remove("inactive-player");
             }
-            this.hitButton.prop('disabled', (this.table.currentPlayer !== this.playerID));
-            this.standButton.prop('disabled', (this.table.currentPlayer !== this.playerID));
-            this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
-            this.betting.style.display = this.table.isBetting ? "block" : "none";
         }
+        this.hitButton.setAttribute('disabled', this.table.currentPLayer !== this.playerID);
+        this.standButton.setAttribute('disabled', (this.table.currentPlayer !== this.playerID));
+        this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
+        this.betting.style.display = this.table.isBetting ? "block" : "none";
+        if (this.playerID == 0) {
+            document.getElementById("user-row").classList.add("d-none");
+            document.getElementById("spacer").classList.remove("d-none");
+            document.getElementById("waiting").style.visibility = "visible";
+        }
+        else {
+            document.getElementById("user-row").classList.remove("d-none");
+            document.getElementById("spacer").classList.add("d-none");
+            document.getElementById("waiting").style.visibility = "hidden";
+        }
+        let players123 = document.getElementsByName("player123");
+        let count = 0;
+        for (let player of players123) {
+            if (player.classList.contains("inactive-player"))
+                count++;
+        }
+        if (count == 3)
+            document.getElementById("player123-row").classList.add("d-none");
+        else
+            document.getElementById("player123-row").classList.remove("d-none");
+        let players456 = document.getElementsByName("player456");
+        count = 0;
+        for (let player of players456) {
+            if (player.classList.contains("inactive-player"))
+                count++;
+        }
+        if (count == 3)
+            document.getElementById("player456-row").classList.add("d-none");
+        else
+            document.getElementById("player456-row").classList.remove("d-none");
         this.displayID = this.table.displayID;
     }
 
+    EnterQueue() {
+        console.log("TEST");
+        this.queueRef.AddUser(this);
+        this.queueTimer = setInterval(() => {
+            this.UpdateQueue();
+        }, 200);
+        document.getElementById("queue").classList.add("d-none");
+        document.getElementById("queue-pos-text").style.display = "inline";
+    }
+
+    UpdateQueue() {
+        this.queuePos = this.queueRef.FindUser(this);
+        document.getElementById("queue-pos").innerHTML = this.queuePos;
+    }
+
     Leave() {
+        this.updateTimer = null;
         if (this.table !== null) {
             this.table.GetPlayer(this.playerID).ChangeActiveness(false);
         }
+        this.table = null;
     }
 }

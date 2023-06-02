@@ -80,20 +80,20 @@ export class Deck {
     constructor() {
         this.deck = new Stack();
         for (let i = 0; i < 52; i++) {
-            deck.Push(new Card(i % 13 + 1, i % 4 + 1));
+            this.deck.Push(new Card(i % 13 + 1, i % 4 + 1));
         }
         this.Shuffle();
     }
 
     Shuffle() {
-        deckArray = deck.ToArray();
-        deck.Clear();
+        let deckArray = this.deck.ToArray();
+        this.deck.Clear();
         for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--) {
             let swapTarget = Math.floor(Math.random() * (swapIndex + 1));
             [deckArray[swapTarget], deckArray[swapIndex]] = [deckArray[swapIndex], deckArray[swapTarget]];
         }
         for (const card of deckArray) {
-            deck.Push(card);
+            this.deck.Push(card);
         }
     }
 

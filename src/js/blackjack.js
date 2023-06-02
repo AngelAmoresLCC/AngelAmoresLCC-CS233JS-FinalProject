@@ -1,6 +1,7 @@
 import './general';
 import { Dealer, ComputerPlayer } from './computers';
 import { Player } from './players';
+import { Interface } from './interface';
 
 //This file is the 'main' file in charge of everything
 
@@ -19,6 +20,7 @@ export class Table {
         this.displayStates = [];
         this.displayID = 0;
         this.UpdateDisplayStates();
+        //this.BeginRound();
     }
 
     GetBets() {
@@ -145,7 +147,7 @@ export class Table {
     }
 
     UpdateDisplayStates() {
-        for (let i = 0; i < 7; i++) {
+        for (let i = 0; i <= this.players.length; i++) {
             if (i == 0) {
                 this.displayStates[0] = {
                     id: "dealer",
@@ -154,7 +156,8 @@ export class Table {
                 }
             }
             else {
-                let player = this.players[i];
+                //if (this.players[i] === null) continue;
+                let player = this.GetPlayer(i);
                 this.displayStates[i] = {
                     id: player.playerID,
                     active: player.active,
@@ -226,15 +229,21 @@ export class QueueHandler {
     AddUser(user) {
         user.table = this.tableRef;
         user.CheckUpdateDisplay();
-        user.setInterval(() => {
+        user.updateTimer = setInterval(() => {
             user.CheckUpdateDisplay();
         }, 200);
         this.users[this.users.length] = user;
     }
 
+    FindUser(user) {
+        return this.users.indexOf(user) + 1;
+    }
+
     CheckQueue() {
         while (this.users[0] === null) {
             this.users.splice(0, 1);
+            if (this.users.length == 0)
+                return;
         }
         if (this.users.length > 0) {
             let slot = tableRef.FirstOpenSlot();
@@ -242,9 +251,24 @@ export class QueueHandler {
                 this.users[0].playerID = slot;
                 this.users[0].SetupPlay();
                 this.tableRef.GetPlayer(slot).ChangeActiveness(true);
+                console.log(this.users[0]);
                 this.users.splice(0, 1);
                 this.CheckQueue();
             }
         }
     }
+}
+
+
+
+let blackjack = null;
+let uInterface = null;
+window.onload = () => {
+    blackjack = new Table();
+    uInterface = new Interface();
+    uInterface.table = blackjack;
+    uInterface.queueRef = blackjack.queue;
+    uInterface.updateTimer = setInterval(() => {
+        uInterface.CheckUpdateDisplay();
+    }, 200);
 }

@@ -30,7 +30,7 @@ export class Player {
             {
                 this.coins = 1000;
                 this.currentBet = 0;
-                this.EmptyHand;
+                this.EmptyHand();
             }
         }
     }
@@ -53,15 +53,15 @@ export class Player {
     }
 
     EmptyHand() {
-        hand = new Hand();
-        splitHand = null;
-        canDD = true;
+        this.hand = new Hand();
+        this.splitHand = null;
+        this.canDD = true;
     }
 
     SplitHand() {
         EmptyHand();
-        splitHand = new Hand();
-        canDD = false;
+        this.splitHand = new Hand();
+        this.canDD = false;
     }
 
     PlayerInfo() {
