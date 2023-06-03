@@ -26,8 +26,7 @@ export class Player {
         if (this.active && newActive) { }
         else {
             this.active = newActive;
-            if (this.active)
-            {
+            if (this.active) {
                 this.coins = 1000;
                 this.currentBet = 0;
                 this.EmptyHand();
@@ -40,7 +39,7 @@ export class Player {
     }
 
     SetCurrentBet(value) {
-        this.currentBet = value;
+        this.currentBet = value * 1;
         this.currentBet = this.currentBet > this.coins ? this.coins : this.currentBet;
         this.coins -= this.currentBet;
     }
@@ -73,6 +72,7 @@ export class Player {
         switch (choice) {
             case this.H:
                 console.log(this.name + " is hitting.");
+                this.canDD = false;
                 this.dealerRef.Deal(this.hand);
                 return true;
             case this.S:
@@ -80,6 +80,8 @@ export class Player {
                 return true;
             case this.D:
                 if (this.CanDD()) {
+                    this.canDD = false;
+                    this.coins += this.currentBet;
                     this.SetCurrentBet(this.currentBet * 2);
                     console.log(this.name + " has doubled down!");
                     this.dealerRef.Deal(this.hand);
@@ -89,6 +91,7 @@ export class Player {
                 return false;
             case this.P:
                 if (this.CanSplit()) {
+                    this.canDD = false;
                     this.coins -= this.currentBet;
                     console.log(this.name + " has split their hand!");
                     console.log("Current coins: " + this.coins);

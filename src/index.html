@@ -68,6 +68,7 @@
                             <label for="userBet">Bet amount: </label>
                             <input id="userBet" type="number" name="userBet" step="10" min="10" value="10" max="1000"
                                 style="width:60%;"><br>
+                            <span id="bet-error" style="font-weight:normal; color:red; display:none;">!ERROR TEXT!</span>
                             <!--Set max to whatever the current number of coins-->
                             <button id="bet" type="button" class="btn btn-info" style="margin-top: 5px; width:90%;">Post
                                 bet</button>
@@ -75,10 +76,11 @@
                     </div>
                 </div>
             </div>
-            <div id="spacer" class="row d-flex d-none"><div> <br><br><br> </div></div>
+            <div id="spacer" class="row d-flex d-none"><div> <br><br><br> </div>
+            </div>
             <div id="player123-row" class="row d-flex justify-content-center d-none">
                 <div id="player1" name="player123" class="col-sm-4 d-flex justify-content-center">
-                    <div class="box active-player">
+                    <div class="box active-player"> <!--Put IDs on these and change marking player busted and whatnot to target this-->
                         <span id="player1-name">Player 1</span><br>
                         <!--
                         <div id="player1-hand">

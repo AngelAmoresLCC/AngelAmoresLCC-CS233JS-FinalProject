@@ -11,6 +11,7 @@ export class Interface {
         this.betButton = document.getElementById("bet");
         this.queueButton = document.getElementById("queue");
         this.queueButton.addEventListener("click", this.EnterQueue.bind(this));
+        this.currentCoins = 0;
         this.table = null;
         this.queueRef = null;
         this.queuePos = -1;
@@ -34,23 +35,41 @@ export class Interface {
     }
 
     MakeBet() {
-        if (this.table.PlayerBet(this.betInput.value, this.playerID)) {
-            this.betInput.value = 10;
-            this.betting.style.display = "none";
-            this.betInput.classList.remove("is-invalid");
+        let issue = "none";
+        if (this.betInput.value >= 10)
+            if (this.betInput.value <= this.currentCoins)
+                if (this.betInput.value % 10 == 0)
+                    if (this.table.PlayerBet(this.betInput.value, this.playerID)) {
+                        this.betInput.value = 10;
+                        this.betting.style.display = "none";
+                        this.betInput.classList.remove("invalid");
+                    }
+                    else
+                        issue = "!SOMETHING WENT WRONG BETTING!";
+                else
+                    issue = "!BET MUST BE A MULTIPLE OF 10!";
+            else
+                issue = "!BET IS TOO LARGE!";
+        else
+            issue = "!BET MUST BE AT LEAST 10 COINS!";
+        if (issue != "none") {
+            document.getElementById("bet-error").innerHTML = issue;
+            document.getElementById("bet-error").style.display = "block";
         }
-        else {
-            this.betInput.classList.add("is-invalid");
-        }
+        else
+            document.getElementById("bet-error").style.display = "none";
+        this.CheckUpdateDisplay();
     }
 
     Action(action) {
         this.table.RequestAction(action, this.playerID);
+        this.CheckUpdateDisplay();
     }
 
     ChangeName() {
         let nameText = document.getElementById("user-name").value;
         this.table.RequestChangeName(nameText, this.playerID);
+        this.CheckUpdateDisplay();
     }
 
     //Checks if the current displayID matches the table's displayID, and updates the display if not
@@ -82,11 +101,13 @@ export class Interface {
                 if (id === this.playerID) {
                     id = "user";
                     this.betInput.max = info.coins;
+                    this.currentCoins = info.coins;
                     this.doubleButton.style.display = info.canDD ? "inline" : "none";
-                    this.doubleButton.setAttribute('disabled', !info.canDD);
+                    info.canDD == "true" ? this.doubleButton.setAttribute('disabled', true) : this.doubleButton.removeAttribute('diabled');
                     this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
                     this.splitButton.style.display = info.canSplit ? "inline" : "none";
-                    this.splitButton.setAttribute('disabled', info.canSplit);
+                    console.log(info.canSplit);
+                    info.canSplit == "true" ? this.splitButton.setAttribute('diabled', true) : this.splitButton.removeAttribute('disabled');
                     playerString = id;
                 }
                 if (info.busted)
@@ -101,21 +122,20 @@ export class Interface {
                 document.getElementById(playerString + "-name").innerHTML = info.name;
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
                 document.getElementById(playerString + "-coins").innerHTML = info.coins;
+
                 //Since displaying the hands (including the split hand) isn't currently fleshed out
                 //This is all commented out
-                /*
+
                 document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
-                if (info.isSplit)
-                {
+                if (info.isSplit) {
                     document.getElementById(playerString + "-split").style.display = "visible";
                     document.getElementById(playerString + "-splitHand").innerHTML = info.splitHandCards;
                 }
-                else
-                {
+                else {
                     document.getElementById(playerString + "-split").style.display = "none";
                     document.getElementById(playerString + "-splitHand").innerHTML = "";
                 }
-                */
+
                 document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
                 if (!info.active)
                     document.getElementById(playerString).classList.add("inactive-player");
@@ -123,8 +143,8 @@ export class Interface {
                     document.getElementById(playerString).classList.remove("inactive-player");
             }
         }
-        this.hitButton.setAttribute('disabled', this.table.currentPLayer !== this.playerID);
-        this.standButton.setAttribute('disabled', (this.table.currentPlayer !== this.playerID));
+        this.table.currentPLayer == this.playerID ? this.hitButton.setAttribute('disabled', true) : this.hitButton.removeAttribute('diabled');
+        this.table.currentPLayer == this.playerID ? this.standButton.setAttribute('disabled', true) : this.standButton.removeAttribute('diabled');
         this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
         this.betting.style.display = this.table.isBetting ? "block" : "none";
         if (this.playerID == 0) {

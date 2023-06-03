@@ -36,6 +36,10 @@
     transform: translate(-50%, -50%);
 }
 
+.invalid {
+    border-color: red;
+}
+
 .active-player {
     border-color: gold;
     border-width: 5px;

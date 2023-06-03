@@ -74,6 +74,14 @@ export class Hand {
         }
         return images;
     }
+
+    HandString() {
+        let handString = "";
+        for (const card of this.hand) {
+            handString += card.ToString();
+        }
+        return handString;
+    }
 }
 
 export class Deck {
@@ -156,6 +164,45 @@ export class Card {
     }
 
     ToString() {
-        return this.values[this.value] + " of " + this.suits[this.suit];
+        let value;
+        switch (this.value) {
+            case 1:
+                value = "ace";
+                break;
+            case 10:
+                value = "ten";
+                break;
+            case 11:
+                value = "jack";
+                break;
+            case 12:
+                value = "queen";
+                break;
+            case 13:
+                value = "king";
+                break;
+            default:
+                value = this.values[this.value];
+                break;
+        }
+        let suit;
+        switch (this.suit) {
+            case 1:
+                suit = "clubs";
+                break;
+            case 2:
+                suit = "diamonds";
+                break;
+            case 3:
+                suit = "hearts";
+                break;
+            case 4:
+                suit = "spades";
+                break;
+            default:
+                suit = "";
+                break;
+        }
+        return "<br>" + value + " of " + suit;
     }
 }

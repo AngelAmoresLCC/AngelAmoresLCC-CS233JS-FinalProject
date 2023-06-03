@@ -15,9 +15,7 @@ export class Dealer {
     }
 
     Deal(hand) {
-        setTimeout(() => {
-            hand.AddCard(this.deck.Draw());
-        }, 500);
+        hand.AddCard(this.deck.Draw());
     }
 }
 

@@ -25,6 +25,7 @@ export class Table {
     }
 
     FillPlayers() {
+        console.log("Filling players");
         for (let i = 0; i < 6 && this.FirstOpenSlot() != 0; i++) {
             this.queue.CheckQueue();
         }
@@ -48,6 +49,7 @@ export class Table {
     }
 
     GetBets() {
+        console.log("Getting bets");
         this.idle = false;
         this.currentPlayer = 0;
         this.isBetting = true;
@@ -82,6 +84,7 @@ export class Table {
     }
 
     BeginRound() {
+        console.log("Beginning round");
         for (let i = 0; i < 2; i++) {
             for (let player of this.players) {
                 if (player.active) {
@@ -90,18 +93,24 @@ export class Table {
                 }
             }
         }
+        for (let i = 0; i < 2; i++) {
+            this.dealer.Deal(this.dealer.hand);
+        }
         this.UpdateDisplayStates();
         this.ContinueRound();
     }
 
     ContinueRound() {
+        console.log("Continuing round");
         this.currentPlayer++;
+        console.log("Current player: " + this.currentPlayer);
         this.UpdateDisplayStates();
         if (this.currentPlayer >= this.players.length)
             this.EndRound();
     }
 
     EndRound() {
+        console.log("Ending round");
         this.currentPlayer = "dealer";
         this.UpdateDisplayStates();
         while (!this.dealer.hand.IsBusted() && this.dealer.hand.GetHandValue() < 17 || (this.dealer.hand.GetHandValue() == 17 && this.dealer.hand.hasLiveAce)) {
@@ -166,7 +175,7 @@ export class Table {
                 this.displayStates[0] = {
                     id: "dealer",
                     busted: this.dealer.hand.IsBusted(),
-                    cards: this.dealer.hand.HandImageArray(),
+                    cards: this.dealer.hand.HandString(),
                 }
             }
             else {
@@ -181,9 +190,9 @@ export class Table {
                     canSplit: player.CanSplit(),
                     coins: player.coins,
                     currentBet: player.currentBet,
-                    mainHandCards: player.hand.HandImageArray(),
+                    mainHandCards: player.hand.HandString(), //Update to newer display solution later
                     isSplit: player.IsSplit(),
-                    splitHandCards: player.IsSplit() ? player.splitHand.HandImageArray() : null,
+                    splitHandCards: player.IsSplit() ? player.splitHand.HandString() : null, //Update to newer display solution later
                 }
             }
         }
