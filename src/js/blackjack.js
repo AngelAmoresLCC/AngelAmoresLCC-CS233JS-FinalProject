@@ -19,55 +19,69 @@ export class Table {
         this.isBetting = true;
         this.displayStates = [];
         this.displayID = 0;
+        this.idle = false;
         this.UpdateDisplayStates();
-        //this.BeginRound();
+        this.FillPlayers();
     }
 
-    GetBets() {
-        this.isBetting = true;
-        this.numBets = 0;
-        let numActivePlayers = 0;
+    FillPlayers() {
+        for (let i = 0; i < 6 && this.FirstOpenSlot() != 0; i++) {
+            this.queue.CheckQueue();
+        }
+        let anyActive = false;
         for (let player of this.players) {
             if (player.active)
-                numActivePlayers++;
+                anyActive = true;
         }
-        this.UpdateDisplayStates();
-        while (numBets <= numActivePlayers) { }
-        this.isBetting = false;
-        this.UpdateDisplayStates();
-    }
-
-    PlayerBet(betAmount, playerID) {
-        if (this.GetPlayer(playerID).MakeBet(betAmount)) {
-            this.numBets++;
-            this.UpdateDisplayStates();
-            return true;
-        }
-        return false;
-    }
-
-    PlayerAction(action, playerID) {
-        if (playerID === this.currentPlayer)
-            if (this.GetPlayer(playerID).HandleChoice(action))
-                return true;
-        return false;
+        if (anyActive)
+            this.GetBets();
+        else
+            this.idle = true;
     }
 
     FirstOpenSlot() {
-        for (let player of players) {
+        for (let player of this.players) {
             if (!player.active)
                 return player.playerID;
         }
         return 0;
     }
 
-    BeginRound() {
-        while (this.FirstOpenSlot != 0) {
-            this.queue.CheckQueue();
-        }
+    GetBets() {
+        this.idle = false;
         this.currentPlayer = 0;
+        this.isBetting = true;
+        this.numBets = 0;
         this.UpdateDisplayStates();
-        this.GetBets();
+    }
+
+    PlayerBet(betAmount, playerID) {
+        if (this.GetPlayer(playerID).MakeBet(betAmount)) {
+            this.numBets++;
+            this.CheckBets();
+            this.UpdateDisplayStates();
+            return true;
+        }
+        return false;
+    }
+
+    CheckBets() {
+        let numActivePlayers = 0;
+        for (let player of this.players) {
+            if (player.active)
+                numActivePlayers++;
+        }
+        if (this.numBets === numActivePlayers)
+        {
+            this.isBetting = false;
+            this.UpdateDisplayStates();
+            setTimeout(() => {
+                this.BeginRound();
+            }, 1000);
+        }
+    }
+
+    BeginRound() {
         for (let i = 0; i < 2; i++) {
             for (let player of this.players) {
                 if (player.active) {
@@ -98,7 +112,7 @@ export class Table {
         this.UpdateDisplayStates();
         this.PayWinnings();
         setTimeout(() => {
-            this.BeginRound();
+            this.FillPlayers();
         }, 3000);
     }
 
@@ -212,6 +226,11 @@ export class Table {
         }
     }
 
+    //Called by user interface, changes the name of the corresponding playerID
+    RequestChangeName(name, playerID) {
+        this.GetPlayer(playerID).name = name;
+    }
+
     //Called by player, instructs dealer to deal a card to that player
     RequestDeal(playerID) {
         this.dealer.Deal(this.GetPlayer(playerID).hand);
@@ -233,6 +252,8 @@ export class QueueHandler {
             user.CheckUpdateDisplay();
         }, 200);
         this.users[this.users.length] = user;
+        if (this.tableRef.idle)
+            this.tableRef.FillPlayers();
     }
 
     FindUser(user) {
@@ -246,12 +267,10 @@ export class QueueHandler {
                 return;
         }
         if (this.users.length > 0) {
-            let slot = tableRef.FirstOpenSlot();
+            let slot = this.tableRef.FirstOpenSlot();
             if (slot > 0) {
-                this.users[0].playerID = slot;
-                this.users[0].SetupPlay();
+                this.users[0].SetupPlay(slot);
                 this.tableRef.GetPlayer(slot).ChangeActiveness(true);
-                console.log(this.users[0]);
                 this.users.splice(0, 1);
                 this.CheckQueue();
             }

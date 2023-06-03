@@ -18,6 +18,7 @@ export class Interface {
         this.updateTimer = null;
         this.displayID = -1;
         window.onbeforeunload = this.Leave();
+        this.ChangeName = this.ChangeName.bind(this);
     }
 
     SetupPlay(playerID) {
@@ -27,6 +28,9 @@ export class Interface {
         this.standButton.addEventListener("click", this.Action.bind(this, "stand"));
         this.doubleButton.addEventListener("click", this.Action.bind(this, "double"));
         this.splitButton.addEventListener("click", this.Action.bind(this, "split"));
+        this.betButton.addEventListener("click", this.MakeBet.bind(this));
+        document.getElementById("user-name").addEventListener("change", this.ChangeName);
+        this.ChangeName();
     }
 
     MakeBet() {
@@ -41,7 +45,12 @@ export class Interface {
     }
 
     Action(action) {
-        this.table.RequestAction(action, this.playerID)
+        this.table.RequestAction(action, this.playerID);
+    }
+
+    ChangeName() {
+        let nameText = document.getElementById("user-name").value;
+        this.table.RequestChangeName(nameText, this.playerID);
     }
 
     //Checks if the current displayID matches the table's displayID, and updates the display if not
@@ -69,16 +78,17 @@ export class Interface {
                 }
             }
             else {
+                let playerString = `player${id}`;
                 if (id === this.playerID) {
                     id = "user";
                     this.betInput.max = info.coins;
                     this.doubleButton.style.display = info.canDD ? "inline" : "none";
-                    this.doubleButton.prop('disabled', !info.canDD);
+                    this.doubleButton.setAttribute('disabled', !info.canDD);
                     this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
                     this.splitButton.style.display = info.canSplit ? "inline" : "none";
-                    this.splitButton.prop('disabled', !info.canSplit);
+                    this.splitButton.setAttribute('disabled', info.canSplit);
+                    playerString = id;
                 }
-                let playerString = `player${id}`;
                 if (info.busted)
                     document.getElementById(playerString).classList.add("busted-player");
                 else {
@@ -90,7 +100,7 @@ export class Interface {
                 }
                 document.getElementById(playerString + "-name").innerHTML = info.name;
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
-                document.getElementById(playerString + "-coins").innterHTML = info.coins;
+                document.getElementById(playerString + "-coins").innerHTML = info.coins;
                 //Since displaying the hands (including the split hand) isn't currently fleshed out
                 //This is all commented out
                 /*
@@ -151,7 +161,6 @@ export class Interface {
     }
 
     EnterQueue() {
-        console.log("TEST");
         this.queueRef.AddUser(this);
         this.queueTimer = setInterval(() => {
             this.UpdateQueue();

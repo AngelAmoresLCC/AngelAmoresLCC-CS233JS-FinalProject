@@ -23,10 +23,10 @@ export class Player {
     }
 
     ChangeActiveness(newActive) {
-        if (active && newActive) { }
+        if (this.active && newActive) { }
         else {
-            active = newActive;
-            if (active)
+            this.active = newActive;
+            if (this.active)
             {
                 this.coins = 1000;
                 this.currentBet = 0;
@@ -42,6 +42,7 @@ export class Player {
     SetCurrentBet(value) {
         this.currentBet = value;
         this.currentBet = this.currentBet > this.coins ? this.coins : this.currentBet;
+        this.coins -= this.currentBet;
     }
 
     CanDD() {
@@ -79,7 +80,6 @@ export class Player {
                 return true;
             case this.D:
                 if (this.CanDD()) {
-                    this.coins -= this.currentBet;
                     this.SetCurrentBet(this.currentBet * 2);
                     console.log(this.name + " has doubled down!");
                     this.dealerRef.Deal(this.hand);

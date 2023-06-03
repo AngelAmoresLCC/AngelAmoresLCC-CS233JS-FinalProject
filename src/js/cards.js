@@ -24,7 +24,7 @@ export class Hand {
     GetHandValue() {
         let handValue = 0;
         let numBigAces = 0;
-        for (const card of hand) {
+        for (const card of this.hand) {
             if (card.IsAce()) {
                 if (handValue <= 10) {
                     handValue += 11;
