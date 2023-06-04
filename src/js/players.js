@@ -78,14 +78,15 @@ export class Player {
     }
 
     HandleChoice(choice) {
+        let targetHand = this.tableRef.targetHand == "main" ? this.hand : this.splitHand;
         switch (choice) {
             case this.H:
                 console.log(this.name + " is hitting.");
                 this.canDD = false;
-                this.dealerRef.Deal(this.hand);
+                this.dealerRef.Deal(targetHand);
                 return true;
             case this.S:
-                console.log(this.name + " has is standing.");
+                console.log(this.name + " is standing.");
                 return true;
             case this.D:
                 if (this.CanDD()) {
@@ -93,10 +94,9 @@ export class Player {
                     this.coins += this.currentBet;
                     this.SetCurrentBet(this.currentBet * 2);
                     console.log(this.name + " is doubling down.");
-                    this.dealerRef.Deal(this.hand);
+                    this.dealerRef.Deal(targetHand);
                     return true;
                 }
-
                 return false;
             case this.P:
                 if (this.CanSplit()) {

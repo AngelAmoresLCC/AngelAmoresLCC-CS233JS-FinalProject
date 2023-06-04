@@ -20,6 +20,7 @@ export class Table {
         this.displayStates = [];
         this.displayID = 0;
         this.idle = false;
+        this.targetHand = "main"; //"split" for playing the split hand
         this.UpdateDisplayStates();
         this.FillPlayers();
     }
@@ -103,9 +104,7 @@ export class Table {
         console.log("Continuing round");
         do {
             this.currentPlayer++;
-            console.log("Checking ID " + this.currentPlayer);
-            if (this.currentPlayer >= this.players.length)
-            {
+            if (this.currentPlayer >= this.players.length) {
                 this.DealerTurn();
                 return;
             }
@@ -189,6 +188,7 @@ export class Table {
                     id: "dealer",
                     busted: this.dealer.hand.IsBusted(),
                     cards: this.dealer.hand.HandString(),
+                    upCard: this.dealer.ShowUpCard(),
                 }
             }
             else {
@@ -239,13 +239,28 @@ export class Table {
     //Called by user interface, checks if the request is viable and passes it to the corresponding player if so
     RequestAction(action, playerID) {
         if (playerID == this.currentPlayer) {
-            if (this.GetPlayer(playerID).HandleChoice(action)) {
-                this.UpdateDisplayStates();
-                if (action == "stand" || action == "doubleDown" || this.GetPlayer(playerID).hand.IsBusted()) {
-                    this.ContinueRound();
+            if (this.targetHand == "main") {
+                if (this.GetPlayer(playerID).HandleChoice(action)) {
+                    this.UpdateDisplayStates();
+                    if (action == "stand" || action == "double" || this.GetPlayer(playerID).hand.IsBusted()) {
+                        if (this.GetPlayer(playerID).IsSplit())
+                            this.targetHand = "split";
+                        else
+                            this.ContinueRound();
+                    }
+                }
+            }
+            else if (this.targetHand == "split") {
+                if (this.GetPlayer(playerID).HandleChoice(action)) {
+                    this.UpdateDisplayStates();
+                    if (action == "stand" || action == "double" || this.GetPlayer(playerID).splitHand.IsBusted()) {
+                        this.targetHand = "main";
+                        this.ContinueRound();
+                    }
                 }
             }
         }
+        console.log("Target hand is " + this.targetHand);
     }
 
     //Called by user interface, changes the name of the corresponding playerID

@@ -98,7 +98,10 @@ export class Interface {
                     else
                         document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
-                document.getElementById(playerString + "-hand").innerHTML = info.cards;
+                if (this.table.currentPlayer == id)
+                    document.getElementById(playerString + "-hand").innerHTML = info.cards;
+                else
+                    document.getElementById(playerString + "-hand").innerHTML = info.upCard;
             }
             else {
                 if (id === this.playerID) {
@@ -112,8 +115,7 @@ export class Interface {
                     info.canSplit == "true" ? this.splitButton.setAttribute('diabled', true) : this.splitButton.removeAttribute('disabled');
                     playerString = id;
                 }
-                if (!info.active)
-                {
+                if (!info.active) {
                     document.getElementById(playerString).classList.add("inactive-player");
                     continue;
                 }

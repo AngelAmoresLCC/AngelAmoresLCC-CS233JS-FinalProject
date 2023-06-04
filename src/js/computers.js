@@ -17,6 +17,14 @@ export class Dealer {
     Deal(hand) {
         hand.AddCard(this.deck.Draw());
     }
+
+    ShowUpCard() {
+        if (this.hand.hand.length <= 0)
+            return "";
+        else if (this.hand.hand.length == 1)
+            return "<br>?????";
+        return "<br>?????" + this.hand.CheckCard(1).ToString();
+    }
 }
 
 export class ComputerPlayer {
