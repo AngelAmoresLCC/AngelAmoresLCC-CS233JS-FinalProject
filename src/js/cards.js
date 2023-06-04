@@ -33,7 +33,7 @@ export class Hand {
                 else
                     handValue += 1;
             }
-            else if (card.Value >= 11) {
+            else if (card.value >= 11) {
                 handValue += 10;
             }
             else {
@@ -60,7 +60,7 @@ export class Hand {
     }
 
     IsBusted() {
-        return this.GetHandValue > 21;
+        return this.GetHandValue() > 21;
     }
 
     HasDoubles() {
@@ -87,7 +87,7 @@ export class Hand {
 export class Deck {
     constructor() {
         this.deck = new Stack();
-        for (let i = 0; i < 52; i++) {
+        for (let i = 0; i < 104; i++) {
             this.deck.Push(new Card(i % 13 + 1, i % 4 + 1));
         }
         this.Shuffle();
@@ -96,7 +96,7 @@ export class Deck {
     Shuffle() {
         let deckArray = this.deck.ToArray();
         this.deck.Clear();
-        for (let swapIndex = deckArray.Length - 1; swapIndex > 0; swapIndex--) {
+        for (let swapIndex = deckArray.length - 1; swapIndex > 0; swapIndex--) {
             let swapTarget = Math.floor(Math.random() * (swapIndex + 1));
             [deckArray[swapTarget], deckArray[swapIndex]] = [deckArray[swapIndex], deckArray[swapTarget]];
         }

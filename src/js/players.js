@@ -31,11 +31,14 @@ export class Player {
                 this.currentBet = 0;
                 this.EmptyHand();
             }
+            else {
+                this.name = "Player" + this.playerID;
+            }
         }
     }
 
     IsSplit() {
-        return this.splitHand != null;
+        return this.splitHand !== null;
     }
 
     SetCurrentBet(value) {
@@ -59,8 +62,14 @@ export class Player {
     }
 
     SplitHand() {
-        EmptyHand();
+        const firstCard = this.hand.CheckCard(0);
+        const secondCard = this.hand.CheckCard(1);
+        this.EmptyHand();
         this.splitHand = new Hand();
+        this.hand.AddCard(firstCard);
+        this.dealerRef.Deal(this.hand);
+        this.splitHand.AddCard(secondCard);
+        this.dealerRef.Deal(this.splitHand);
         this.canDD = false;
     }
 
@@ -76,14 +85,14 @@ export class Player {
                 this.dealerRef.Deal(this.hand);
                 return true;
             case this.S:
-                console.log(this.name + " has decided to stand.");
+                console.log(this.name + " has is standing.");
                 return true;
             case this.D:
                 if (this.CanDD()) {
                     this.canDD = false;
                     this.coins += this.currentBet;
                     this.SetCurrentBet(this.currentBet * 2);
-                    console.log(this.name + " has doubled down!");
+                    console.log(this.name + " is doubling down.");
                     this.dealerRef.Deal(this.hand);
                     return true;
                 }
@@ -93,25 +102,14 @@ export class Player {
                 if (this.CanSplit()) {
                     this.canDD = false;
                     this.coins -= this.currentBet;
-                    console.log(this.name + " has split their hand!");
-                    console.log("Current coins: " + this.coins);
-                    SplitTurn();
+                    console.log(this.name + " is splitting their hand.");
+                    this.SplitHand();
                     return true;
                 }
                 return false;
             default:
                 return false;
         }
-    }
-
-    TakeTurn(action) {
-        while (!this.HandleChoice(action)) {
-            action = this.tableRef.RequestAction(this.playerID);
-        }
-    }
-
-    SplitTurn() {
-
     }
 
     MakeBet(betAmount) {

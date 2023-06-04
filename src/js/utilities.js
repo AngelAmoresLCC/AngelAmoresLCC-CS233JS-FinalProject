@@ -21,9 +21,8 @@ export class Stack {
             this.last = item;
         }
         else {
-            let temp = this.first;
-            this.first = item;
-            this.first.next = temp;
+            item.next = this.first;
+            [this.first, item] = [item, this.first];
         }
         return ++this.count;
     }

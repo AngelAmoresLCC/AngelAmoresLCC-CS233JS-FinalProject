@@ -7,7 +7,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     background-color: darkgreen;
-  }
+}
 
 .box {
     margin: 20px;
@@ -27,12 +27,23 @@
     justify-content: center;
 }
 
+.hand-box {
+    margin: 5px;
+    padding: 5px;
+    display: inline;
+    border-color: lightgray;
+    border-width: 3px;
+    border-style: solid;
+    border-radius: 3px;
+    /*Border messes up, find a way to fix it*/
+}
+
 .true-center {
-    margin:0; 
-    position:absolute; 
-    left:50%; 
-    top:50%; 
-    -ms-transform: translate(-50%, -50%); 
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
 
@@ -40,7 +51,7 @@
     border-color: red;
 }
 
-.active-player {
+.current-player {
     border-color: gold;
     border-width: 5px;
 }

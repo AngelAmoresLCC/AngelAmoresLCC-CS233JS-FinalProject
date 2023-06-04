@@ -84,20 +84,23 @@ export class Interface {
     UpdateDisplay(displayInfoArray) {
         for (const info of displayInfoArray) {
             let id = info.id;
+            let playerString = `player${id}`;
             if (id === "dealer") {
-                let playerString = id;
-                if (info.busted)
-                    document.getElementById(playerString).classList.add("busted-player");
-                else {
-                    document.getElementById(playerString).classList.remove("busted-player");
-                    if (id === this.table.currentPlayer)
-                        document.getElementById(playerString).classList.add("current-player");
-                    else
-                        document.getElementById(playerString).classList.remove("current-player");
+                playerString = "dealer";
+                if (info.busted) {
+                    document.getElementById(playerString + "-box").classList.add("busted-player");
+                    document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
+                else {
+                    document.getElementById(playerString + "-box").classList.remove("busted-player");
+                    if (id === this.table.currentPlayer)
+                        document.getElementById(playerString + "-box").classList.add("current-player");
+                    else
+                        document.getElementById(playerString + "-box").classList.remove("current-player");
+                }
+                document.getElementById(playerString + "-hand").innerHTML = info.cards;
             }
             else {
-                let playerString = `player${id}`;
                 if (id === this.playerID) {
                     id = "user";
                     this.betInput.max = info.coins;
@@ -106,18 +109,26 @@ export class Interface {
                     info.canDD == "true" ? this.doubleButton.setAttribute('disabled', true) : this.doubleButton.removeAttribute('diabled');
                     this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
                     this.splitButton.style.display = info.canSplit ? "inline" : "none";
-                    console.log(info.canSplit);
                     info.canSplit == "true" ? this.splitButton.setAttribute('diabled', true) : this.splitButton.removeAttribute('disabled');
                     playerString = id;
                 }
-                if (info.busted)
-                    document.getElementById(playerString).classList.add("busted-player");
+                if (!info.active)
+                {
+                    document.getElementById(playerString).classList.add("inactive-player");
+                    continue;
+                }
+                else
+                    document.getElementById(playerString).classList.remove("inactive-player");
+                if (info.busted) {
+                    document.getElementById(playerString + "-box").classList.add("busted-player");
+                    document.getElementById(playerString + "-box").classList.remove("current-player");
+                }
                 else {
-                    document.getElementById(playerString).classList.remove("busted-player");
+                    document.getElementById(playerString + "-box").classList.remove("busted-player");
                     if (info.id === this.table.currentPlayer)
-                        document.getElementById(playerString).classList.add("current-player");
+                        document.getElementById(playerString + "-box").classList.add("current-player");
                     else
-                        document.getElementById(playerString).classList.remove("current-player");
+                        document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
                 document.getElementById(playerString + "-name").innerHTML = info.name;
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
@@ -127,8 +138,9 @@ export class Interface {
                 //This is all commented out
 
                 document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
+                //Oh god fix the split hand display it's so messed up
                 if (info.isSplit) {
-                    document.getElementById(playerString + "-split").style.display = "visible";
+                    document.getElementById(playerString + "-split").style.display = "inline";
                     document.getElementById(playerString + "-splitHand").innerHTML = info.splitHandCards;
                 }
                 else {
@@ -137,14 +149,17 @@ export class Interface {
                 }
 
                 document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
-                if (!info.active)
-                    document.getElementById(playerString).classList.add("inactive-player");
-                else
-                    document.getElementById(playerString).classList.remove("inactive-player");
             }
         }
-        this.table.currentPLayer == this.playerID ? this.hitButton.setAttribute('disabled', true) : this.hitButton.removeAttribute('diabled');
-        this.table.currentPLayer == this.playerID ? this.standButton.setAttribute('disabled', true) : this.standButton.removeAttribute('diabled');
+        let handBoxes = document.getElementsByName("hand-box");
+        for (let box of handBoxes) {
+            if (this.table.currentPlayer == 0)
+                box.classList.add("d-none");
+            else
+                box.classList.remove("d-none");
+        }
+        this.table.currentPlayer == this.playerID ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
+        this.table.currentPlayer == this.playerID ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
         this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
         this.betting.style.display = this.table.isBetting ? "block" : "none";
         if (this.playerID == 0) {

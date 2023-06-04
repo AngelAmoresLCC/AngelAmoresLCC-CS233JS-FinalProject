@@ -73,8 +73,7 @@ export class Table {
             if (player.active)
                 numActivePlayers++;
         }
-        if (this.numBets === numActivePlayers)
-        {
+        if (this.numBets === numActivePlayers) {
             this.isBetting = false;
             this.UpdateDisplayStates();
             setTimeout(() => {
@@ -102,24 +101,38 @@ export class Table {
 
     ContinueRound() {
         console.log("Continuing round");
-        this.currentPlayer++;
+        do {
+            this.currentPlayer++;
+            console.log("Checking ID " + this.currentPlayer);
+            if (this.currentPlayer >= this.players.length)
+            {
+                this.DealerTurn();
+                return;
+            }
+        } while (this.GetPlayer(this.currentPlayer).active == false);
         console.log("Current player: " + this.currentPlayer);
         this.UpdateDisplayStates();
-        if (this.currentPlayer >= this.players.length)
-            this.EndRound();
     }
 
-    EndRound() {
-        console.log("Ending round");
+    DealerTurn() {
+        console.log("Dealer's turn");
         this.currentPlayer = "dealer";
         this.UpdateDisplayStates();
         while (!this.dealer.hand.IsBusted() && this.dealer.hand.GetHandValue() < 17 || (this.dealer.hand.GetHandValue() == 17 && this.dealer.hand.hasLiveAce)) {
             this.dealer.Deal(this.dealer.hand);
             this.UpdateDisplayStates();
         }
+        setTimeout(() => {
+            this.EndRound();
+        }, 3000);
+    }
+
+    EndRound() {
+        console.log("Ending round");
         this.currentPlayer = 0;
         this.UpdateDisplayStates();
         this.PayWinnings();
+        this.dealer.ResetDealer();
         setTimeout(() => {
             this.FillPlayers();
         }, 3000);
@@ -127,7 +140,7 @@ export class Table {
 
     PayWinnings() {
         let dealerScore = this.dealer.hand.GetHandValue();
-        for (const player of players) {
+        for (const player of this.players) {
             let handValue = player.hand.GetHandValue();
             if (player.IsSplit()) {
                 let splitValue = player.splitHand.GetHandValue();
