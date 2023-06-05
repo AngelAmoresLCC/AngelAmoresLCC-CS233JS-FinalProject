@@ -185,6 +185,7 @@ export class Card {
                 value = this.values[this.value];
                 break;
         }
+
         let suit;
         switch (this.suit) {
             case 1:

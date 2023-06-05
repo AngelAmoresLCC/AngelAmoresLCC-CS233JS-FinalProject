@@ -10,8 +10,10 @@ export class Table {
         this.dealer = new Dealer();
         this.queue = new QueueHandler(this);
         this.players = [];
+        this.interfaces = []; //Can be either user interfaces or computer players
         for (let i = 1; i <= 6; i++) {
             this.players[this.players.length] = new Player(this, this.dealer, "Player " + i, i);
+            this.interfaces[this.interfaces.length] = null;
         }
         this.dealer.players = this.players;
         this.currentPlayer = 0;
@@ -21,6 +23,7 @@ export class Table {
         this.displayID = 0;
         this.idle = false;
         this.targetHand = "main"; //"split" for playing the split hand
+        this.turnCountdowner = null;
         this.UpdateDisplayStates();
         this.FillPlayers();
     }
@@ -35,10 +38,20 @@ export class Table {
             if (player.active)
                 anyActive = true;
         }
-        if (anyActive)
+        if (anyActive) {
+            this.FillComputers();
             this.GetBets();
+        }
         else
             this.idle = true;
+    }
+
+    FillComputers() {
+        for (let player of this.players) {
+            if (!player.active)
+                this.interfaces[player.playerID - 1] = new ComputerPlayer(this, player.playerID);
+                player.active = true;
+        }
     }
 
     FirstOpenSlot() {
@@ -56,16 +69,6 @@ export class Table {
         this.isBetting = true;
         this.numBets = 0;
         this.UpdateDisplayStates();
-    }
-
-    PlayerBet(betAmount, playerID) {
-        if (this.GetPlayer(playerID).MakeBet(betAmount)) {
-            this.numBets++;
-            this.CheckBets();
-            this.UpdateDisplayStates();
-            return true;
-        }
-        return false;
     }
 
     CheckBets() {
@@ -113,6 +116,15 @@ export class Table {
         this.UpdateDisplayStates();
     }
 
+    //This is a failsafe to make sure that the game continues even if the interface is broken somehow
+    //TODO: Implement removing 'dead' interfaces such that they cannot rejoin with a valid ID if they come back
+    BeginTurnCountDown() {
+        this.turnCountdowner = setTimeout(() => {
+            console.log("Player " + this.currentPlayer + " appears missing.");
+            this.RequestAction("stand", this.currentPlayer);
+        }, 60000)
+    }
+
     DealerTurn() {
         console.log("Dealer's turn");
         this.currentPlayer = "dealer";
@@ -133,8 +145,20 @@ export class Table {
         this.PayWinnings();
         this.dealer.ResetDealer();
         setTimeout(() => {
+            this.ClearPlayers();
+        }, 1500);
+    }
+
+    ClearPlayers() {
+        for (let player of this.players)
+            if (player.active && player.coins < 10) {
+                this.interfaces[player.playerID - 1].LeaveTable();
+                this.interfaces[player.playerID - 1] = null;
+            }
+        this.UpdateDisplayStates();
+        setTimeout(() => {
             this.FillPlayers();
-        }, 3000);
+        }, 1000);
     }
 
     PayWinnings() {
@@ -144,12 +168,10 @@ export class Table {
             if (player.IsSplit()) {
                 let splitValue = player.splitHand.GetHandValue();
                 if (!player.hand.IsBusted()) {
-                    if (handValue > dealerScore || this.dealer.hand.IsBusted()) {
+                    if (handValue > dealerScore || this.dealer.hand.IsBusted())
                         player.coins += player.currentBet * 2;
-                    }
-                    else if (handValue == dealerScore) {
+                    else if (handValue == dealerScore)
                         player.coins += player.currentBet;
-                    }
                 }
                 if (!player.splitHand.IsBusted()) {
                     if (splitValue > dealerScore || this.dealer.hand.IsBusted()) {
@@ -236,18 +258,43 @@ export class Table {
         return this.players[playerID - 1];
     }
 
+    //Called by user interface, checks if the request is viable and then applies the bet to the corresponding player,
+    //updating the number of bets afterwards
+    //Can also be called by a computer player
+    PlayerBet(betAmount, playerID) {
+        console.log("Bet request received from " + playerID);
+        if (this.GetPlayer(playerID).MakeBet(betAmount)) {
+            this.numBets++;
+            this.CheckBets();
+            this.UpdateDisplayStates();
+            return true;
+        }
+        return false;
+    }
+
     //Called by user interface, checks if the request is viable and passes it to the corresponding player if so
+    //Can also be called by a computer player
     RequestAction(action, playerID) {
+        console.log(action);
         if (playerID == this.currentPlayer) {
+            clearTimeout(this.turnCountdowner);
             if (this.targetHand == "main") {
                 if (this.GetPlayer(playerID).HandleChoice(action)) {
                     this.UpdateDisplayStates();
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).hand.IsBusted()) {
-                        if (this.GetPlayer(playerID).IsSplit())
-                            this.targetHand = "split";
+                        if (this.GetPlayer(playerID).IsSplit()) {
+                            if (this.GetPlayer(playerID).hand.CheckCard(0).IsAce())
+                                this.ContinueRound();
+                            else {
+                                this.targetHand = "split";
+                                this.BeginTurnCountDown();
+                            }
+                        }
                         else
                             this.ContinueRound();
                     }
+                    else
+                        this.BeginTurnCountDown();
                 }
             }
             else if (this.targetHand == "split") {
@@ -257,21 +304,27 @@ export class Table {
                         this.targetHand = "main";
                         this.ContinueRound();
                     }
+                    else
+                        this.BeginTurnCountDown();
                 }
             }
         }
-        console.log("Target hand is " + this.targetHand);
     }
 
     //Called by user interface, changes the name of the corresponding playerID
+    //Can also be called by a computer player
     RequestChangeName(name, playerID) {
         this.GetPlayer(playerID).name = name;
     }
 
     //Called by player, instructs dealer to deal a card to that player
+    //Yeah this method is kind of pointless, I know
     RequestDeal(playerID) {
         this.dealer.Deal(this.GetPlayer(playerID).hand);
-        return;
+    }
+
+    RemoveInterface(playerID) {
+        this.interfaces[this.playerID - 1].LeaveTable();
     }
 }
 
@@ -283,11 +336,6 @@ export class QueueHandler {
     }
 
     AddUser(user) {
-        user.table = this.tableRef;
-        user.CheckUpdateDisplay();
-        user.updateTimer = setInterval(() => {
-            user.CheckUpdateDisplay();
-        }, 200);
         this.users[this.users.length] = user;
         if (this.tableRef.idle)
             this.tableRef.FillPlayers();
@@ -308,6 +356,7 @@ export class QueueHandler {
             if (slot > 0) {
                 this.users[0].SetupPlay(slot);
                 this.tableRef.GetPlayer(slot).ChangeActiveness(true);
+                this.tableRef.interfaces[slot - 1] = this.users[0];
                 this.users.splice(0, 1);
                 this.CheckQueue();
             }
@@ -327,4 +376,5 @@ window.onload = () => {
     uInterface.updateTimer = setInterval(() => {
         uInterface.CheckUpdateDisplay();
     }, 200);
+    uInterface.CheckUpdateDisplay();
 }

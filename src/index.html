@@ -36,6 +36,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-sm-4 d-flex justify-content-center" style="visibility:hidden;" id="timer">
+                    <div class="box" style="position:relative; height:7em;">
+                        <span style="display:inline; width:15em">Time left in your turn:<br>
+                            <span id="timer-count" class="true-center display-5">15</span></span>
+                    </div>
+                </div>
             </div>
             <div id="user-row" class="row d-flex justify-content-center d-none">
                 <div id="user" class="col-sm-4 d-flex justify-content-center">
@@ -49,8 +55,8 @@
                         -->
                         <div name="hand-box" class="d-none">
                             <br>
-                            <div class="hand-box">
-                                Hand: <span id="user-hand"></span>
+                            <div class="hand-box" id="user-hand">
+                                <!--Hand: <span id="user-hand"></span>-->
                             </div>
                             <div id="user-split" class="hand-box">
                                 Split hand: <span id="user-splitHand"></span>
@@ -87,8 +93,7 @@
                     </div>
                 </div>
             </div>
-            <div id="spacer" class="row d-flex d-none">
-                <div> <br><br><br> </div>
+            <div id="spacer" class="row d-flex d-none"><div> <br><br><br> </div>
             </div>
             <div id="player123-row" class="row d-flex justify-content-center d-none">
                 <div id="player1" name="player123" class="col-sm-4 d-flex justify-content-center">

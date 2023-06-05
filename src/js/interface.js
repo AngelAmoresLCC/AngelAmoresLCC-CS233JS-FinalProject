@@ -1,6 +1,6 @@
 export class Interface {
     constructor() {
-        this.playerID = 0;
+        this.playerID = -1;
         this.actions = document.getElementById("actions");
         this.hitButton = document.getElementById("hit");
         this.standButton = document.getElementById("stand");
@@ -18,19 +18,25 @@ export class Interface {
         this.queueTimer = null;
         this.updateTimer = null;
         this.displayID = -1;
-        window.onbeforeunload = this.Leave();
+        this.turnTimer = null;
+        this.turnLength = 0;
+        this.abortSignal = new AbortController();
+        window.onbeforeunload = this.LeaveTable();
         this.ChangeName = this.ChangeName.bind(this);
     }
 
     SetupPlay(playerID) {
         this.playerID = playerID;
-        document.getElementById(`player${playerID}`).visibility = "hidden";
-        this.hitButton.addEventListener("click", this.Action.bind(this, "hit"));
-        this.standButton.addEventListener("click", this.Action.bind(this, "stand"));
-        this.doubleButton.addEventListener("click", this.Action.bind(this, "double"));
-        this.splitButton.addEventListener("click", this.Action.bind(this, "split"));
-        this.betButton.addEventListener("click", this.MakeBet.bind(this));
-        document.getElementById("user-name").addEventListener("change", this.ChangeName);
+        clearInterval(this.queueTimer);
+        document.getElementById("player" + playerID).style.visibility = "collapse";
+        this.abortSignal.abort();
+        this.abortSignal = new AbortController();
+        this.hitButton.addEventListener("click", this.Action.bind(this, "hit"), { signal: this.abortSignal.signal });
+        this.standButton.addEventListener("click", this.Action.bind(this, "stand"), { signal: this.abortSignal.signal });
+        this.doubleButton.addEventListener("click", this.Action.bind(this, "double"), { signal: this.abortSignal.signal });
+        this.splitButton.addEventListener("click", this.Action.bind(this, "split"), { signal: this.abortSignal.signal });
+        this.betButton.addEventListener("click", this.MakeBet.bind(this), { signal: this.abortSignal.signal });
+        document.getElementById("user-name").addEventListener("change", this.ChangeName, { signal: this.abortSignal.signal });
         this.ChangeName();
     }
 
@@ -63,6 +69,9 @@ export class Interface {
 
     Action(action) {
         this.table.RequestAction(action, this.playerID);
+        document.getElementById("timer").style.visibility = "hidden";
+        clearInterval(this.turnTimer);
+        this.turnTimer = null;
         this.CheckUpdateDisplay();
     }
 
@@ -74,6 +83,8 @@ export class Interface {
 
     //Checks if the current displayID matches the table's displayID, and updates the display if not
     CheckUpdateDisplay() {
+        if (this.table == null)
+            return;
         if (this.displayID !== this.table.displayID) {
             this.UpdateDisplay(this.table.displayStates);
         }
@@ -136,9 +147,6 @@ export class Interface {
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
                 document.getElementById(playerString + "-coins").innerHTML = info.coins;
 
-                //Since displaying the hands (including the split hand) isn't currently fleshed out
-                //This is all commented out
-
                 document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
                 //Oh god fix the split hand display it's so messed up
                 if (info.isSplit) {
@@ -151,6 +159,8 @@ export class Interface {
                 }
 
                 document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
+                if (info.playerID == this.playerID)
+                    document.getElementById("").style.visibility = "collapse";
             }
         }
         let handBoxes = document.getElementsByName("hand-box");
@@ -162,9 +172,11 @@ export class Interface {
         }
         this.table.currentPlayer == this.playerID ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
         this.table.currentPlayer == this.playerID ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
+        if (this.table.currentPlayer == this.playerID && this.turnTimer == null)
+            this.StartTurnTimer();
         this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
         this.betting.style.display = this.table.isBetting ? "block" : "none";
-        if (this.playerID == 0) {
+        if (this.playerID == -1) {
             document.getElementById("user-row").classList.add("d-none");
             document.getElementById("spacer").classList.remove("d-none");
             document.getElementById("waiting").style.visibility = "visible";
@@ -197,6 +209,27 @@ export class Interface {
         this.displayID = this.table.displayID;
     }
 
+    ResetDisplay() {
+        this.queueButton
+    }
+
+    StartTurnTimer() {
+        clearInterval(this.turnTimer);
+        this.turnTimer = null;
+        this.turnLength = 15;
+        document.getElementById("timer-count").innerHTML = this.turnLength;
+        document.getElementById("timer").style.visibility = "visible";
+        this.turnTimer = setInterval(() => {
+            this.UpdateTurnTimer();
+        }, 1000);
+    }
+
+    UpdateTurnTimer() {
+        document.getElementById("timer-count").innerHTML = --this.turnLength;
+        if (this.turnLength <= 0)
+            this.Action("stand");
+    }
+
     EnterQueue() {
         this.queueRef.AddUser(this);
         this.queueTimer = setInterval(() => {
@@ -211,11 +244,12 @@ export class Interface {
         document.getElementById("queue-pos").innerHTML = this.queuePos;
     }
 
-    Leave() {
-        this.updateTimer = null;
-        if (this.table !== null) {
+    LeaveTable() {
+        if (this.table !== null)
             this.table.GetPlayer(this.playerID).ChangeActiveness(false);
-        }
-        this.table = null;
+        this.playerID = -1;
+        document.getElementById("queue").classList.remove("d-none");
+        document.getElementById("queue-pos-text").style.display = "none";
+        this.CheckUpdateDisplay();
     }
 }
