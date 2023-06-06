@@ -53,7 +53,7 @@ export class ComputerPlayer {
     }
 
     CheckGameState() {
-        if (this.tableRef.isBetting && !this.hasBet) { //Somehow there's an issue with betting
+        if (this.tableRef.isBetting && !this.hasBet) {
             this.tableRef.PlayerBet(this.GetBet(), this.playerID);
             this.hasBet = true;
         }
@@ -64,7 +64,16 @@ export class ComputerPlayer {
     }
 
     GetBet() {
-        return Math.min(500, this.playerRef.coins); //Correct bet amount back to 200, this is just for testing purposes
+        let bet = 10;
+        let allIn = Math.floor(Math.random() * 30)
+        if (allIn == 0) {
+            bet = this.playerRef.coins;
+        }
+        else {
+            bet = Math.min(200, this.playerRef.coins);
+            bet = bet - (bet % 10);
+        }
+        return bet;
     }
 
     GetAction() {
@@ -82,6 +91,7 @@ export class ComputerPlayer {
         }
         else if (targetHand.hasLiveAce) {
             handValue = Math.min(handValue - 13, 6); //Correcting index for table lookup
+            handValue = handValue < 0 ? 0 : handValue;
             choice = tables.CheckSoftTable(handValue, dealerCard);
         }
         else {

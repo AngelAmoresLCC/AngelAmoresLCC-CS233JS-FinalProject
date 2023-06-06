@@ -48,6 +48,7 @@
                     <div id="user-box" class="box">
                         <input id="user-name" value="User Name" maxlength="16"
                             style="text-align:center; background-color:inherit; width:fit-content;"></input><br>
+                        <span style="font-weight:normal;">Player <span id="user-id">-1</span></span><br>
                         <!--
                         <div id="user-hand">
                             This has more space to work with, but I still don't know how I'll format this
@@ -93,6 +94,8 @@
                             <!--Set max to whatever the current number of coins-->
                             <button id="bet" type="button" class="btn btn-info" style="margin-top: 5px; width:90%;">Post
                                 bet</button>
+                            <button id="leave" type="button" class="btn btn-dark"
+                                style="margin-top: 5px; width:90%;">Leave table</button>
                         </div>
                     </div>
                 </div>
@@ -104,6 +107,7 @@
                 <div id="player1" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player1-box" class="box current-player">
                         <span id="player1-name">Player 1</span><br>
+                        <span style="font-weight:normal;">Player 1</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">
@@ -120,6 +124,7 @@
                 <div id="player2" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player2-box" class="box busted-player">
                         <span id="player2-name">Player 2</span><br>
+                        <span style="font-weight:normal;">Player 2</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">
@@ -136,6 +141,7 @@
                 <div id="player3" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player3-box" class="box">
                         <span id="player3-name">Player 3</span><br>
+                        <span style="font-weight:normal;">Player 3</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">
@@ -154,6 +160,7 @@
                 <div id="player4" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player4-box" class="box">
                         <span id="player4-name">Player 4</span><br>
+                        <span style="font-weight:normal;">Player 4</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">
@@ -170,6 +177,7 @@
                 <div id="player5" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player5-box" class="box">
                         <span id="player5-name">Player 5</span><br>
+                        <span style="font-weight:normal;">Player 5</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">
@@ -183,10 +191,10 @@
                         Coins: <span id="player5-coins">1000</span>
                     </div>
                 </div>
-                <div id="player6" name="player456" class="col-sm-4 d-flex justify-content-center"
-                    style="visibility:collapse;">
+                <div id="player6" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player6-box" class="box">
                         <span id="player6-name">Player 6</span><br>
+                        <span style="font-weight:normal;">Player 6</span><br>
                         <div name="hand-box" class="d-none">
                             <br>
                             <div class="hand-box">

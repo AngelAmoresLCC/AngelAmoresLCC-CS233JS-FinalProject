@@ -9,9 +9,11 @@ export class Interface {
         this.betting = document.getElementById("betting");
         this.betInput = document.getElementById("userBet");
         this.betButton = document.getElementById("bet");
+        this.leaveButton = document.getElementById("leave");
         this.queueButton = document.getElementById("queue");
         this.queueButton.addEventListener("click", this.EnterQueue.bind(this));
         this.currentCoins = 0;
+        this.canAct = true;
         this.table = null;
         this.queueRef = null;
         this.queuePos = -1;
@@ -36,6 +38,7 @@ export class Interface {
         this.doubleButton.addEventListener("click", this.Action.bind(this, "double"), { signal: this.abortSignal.signal });
         this.splitButton.addEventListener("click", this.Action.bind(this, "split"), { signal: this.abortSignal.signal });
         this.betButton.addEventListener("click", this.MakeBet.bind(this), { signal: this.abortSignal.signal });
+        this.leaveButton.addEventListener("click", this.LeaveTable.bind(this), { signal: this.abortSignal.signal });
         document.getElementById("user-name").addEventListener("change", this.ChangeName, { signal: this.abortSignal.signal });
         this.ChangeName();
     }
@@ -68,12 +71,18 @@ export class Interface {
     }
 
     Action(action) {
+        this.canAct = false;
         this.hitButton.setAttribute('disabled', true);
         this.standButton.setAttribute('disabled', true);
         this.doubleButton.setAttribute('disabled', true);
         this.splitButton.setAttribute('disabled', true);
         this.table.RequestAction(action, this.playerID);
         this.RemoveTurnTimer();
+        setTimeout(() => {
+            this.canAct = true;
+            console.log(this.canAct);
+            this.UpdateDisplay(this.table.displayStates);
+        }, 500);
     }
 
     ChangeName() {
@@ -118,13 +127,14 @@ export class Interface {
             else {
                 if (id === this.playerID) {
                     id = "user";
+                    document.getElementById(id + "-id").innerHTML = this.playerID;
                     this.betInput.max = info.coins;
                     this.currentCoins = info.coins;
                     this.doubleButton.style.display = info.canDD ? "inline" : "none";
-                    info.canDD == "true" ? this.doubleButton.setAttribute('disabled', true) : this.doubleButton.removeAttribute('diabled');
+                    (this.canAct && info.canDD) ? this.doubleButton.removeAttribute('disabled') : this.doubleButton.setAttribute('disabled', true);
                     this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
                     this.splitButton.style.display = info.canSplit ? "inline" : "none";
-                    info.canSplit == "true" ? this.splitButton.setAttribute('diabled', true) : this.splitButton.removeAttribute('disabled');
+                    (this.canAct && info.canSplit) ? this.splitButton.removeAttribute('disabled') : this.splitButton.setAttribute('disabled', true);
                     playerString = id;
                 }
                 if (!info.active) {
@@ -159,9 +169,11 @@ export class Interface {
                     document.getElementById(playerString + "-splitHand").innerHTML = "";
                 }
 
-                document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
-                if (info.playerID == this.playerID)
-                    document.getElementById("").style.visibility = "collapse";
+                //document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
+                if (info.id == this.playerID)
+                    document.getElementById("player" + info.id).style.visibility = "collapse";
+                else
+                    document.getElementById("player" + info.id).style.visibility = "visible";
             }
         }
         let handBoxes = document.getElementsByName("hand-box");
@@ -171,8 +183,8 @@ export class Interface {
             else
                 box.classList.remove("d-none");
         }
-        this.table.currentPlayer == this.playerID ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
-        this.table.currentPlayer == this.playerID ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
+        (this.canAct && this.table.currentPlayer == this.playerID) ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
+        (this.canAct && this.table.currentPlayer == this.playerID) ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
         if (this.table.currentPlayer == this.playerID && this.turnTimer == null)
             this.StartTurnTimer();
         else
@@ -254,8 +266,12 @@ export class Interface {
     }
 
     LeaveTable() {
-        if (this.table !== null)
+        if (this.table !== null) {
             this.table.GetPlayer(this.playerID).ChangeActiveness(false);
+            if (this.table.isBetting)
+                this.table.CheckBets();
+            this.table.interfaces[this.playerID - 1] = null;
+        }
         this.playerID = -1;
         document.getElementById("queue").classList.remove("d-none");
         document.getElementById("queue-pos-text").style.display = "none";

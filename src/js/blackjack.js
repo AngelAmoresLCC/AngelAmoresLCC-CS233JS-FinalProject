@@ -154,18 +154,6 @@ export class Table {
         }, 1500);
     }
 
-    ClearPlayers() {
-        for (let player of this.players)
-            if (player.active && player.coins < 10) {
-                this.interfaces[player.playerID - 1].LeaveTable();
-                this.interfaces[player.playerID - 1] = null;
-            }
-        this.UpdateDisplayStates();
-        setTimeout(() => {
-            this.FillPlayers();
-        }, 1000);
-    }
-
     PayWinnings() {
         let dealerScore = this.dealer.hand.GetHandValue();
         for (const player of this.players) {
@@ -206,6 +194,18 @@ export class Table {
             player.EmptyHand();
         }
         this.UpdateDisplayStates();
+    }
+
+    ClearPlayers() {
+        for (let player of this.players)
+            if (player.active && player.coins < 10) {
+                this.interfaces[player.playerID - 1].LeaveTable();
+                this.interfaces[player.playerID - 1] = null;
+            }
+        this.UpdateDisplayStates();
+        setTimeout(() => {
+            this.FillPlayers();
+        }, 1000);
     }
 
     UpdateDisplayStates() {

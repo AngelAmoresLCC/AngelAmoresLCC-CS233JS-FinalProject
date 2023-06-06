@@ -62,5 +62,5 @@
 }
 
 .inactive-player {
-    background-color: #6e6e6e99;
+    visibility: collapse;
 }
