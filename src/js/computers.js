@@ -37,7 +37,6 @@ export class ComputerPlayer {
         this.tableRef = table;
         this.playerID = ID;
         this.playerRef = this.tableRef.GetPlayer(this.playerID);
-        this.handRef = this.playerRef.hand;
         this.dealerRef = this.tableRef.dealer;
         this.hasBet = false;
         this.stuffCheckTimer = setInterval(() => {
@@ -72,15 +71,16 @@ export class ComputerPlayer {
         let tables = new OddsTables();
         let choice = "";
         let dealerCard = this.dealerRef.UpCardValue();
+        let targetHand = this.tableRef.targetHand == "main" ? this.playerRef.hand : this.playerRef.splitHand;
         dealerCard -= 1; //This is to adjust the dealer's card into the correct index for the table lookup
         dealerCard = Math.min(dealerCard, 9);
-        let handValue = this.handRef.GetHandValue();
-        if (this.handRef.HasDoubles() && this.playerRef.CanSplit()) {
-            handValue = this.handRef.CheckCard(0).value; //Checking what the pair is
+        let handValue = targetHand.GetHandValue();
+        if (targetHand.HasDoubles() && this.playerRef.CanSplit()) {
+            handValue = targetHand.CheckCard(0).value; //Checking what the pair is
             handValue = Math.min(handValue - 1, 9); //Correcting index for table lookup
             choice = tables.CheckSplitTable(handValue, dealerCard);
         }
-        else if (this.handRef.hasLiveAce) {
+        else if (targetHand.hasLiveAce) {
             handValue = Math.min(handValue - 13, 6); //Correcting index for table lookup
             choice = tables.CheckSoftTable(handValue, dealerCard);
         }
@@ -89,8 +89,8 @@ export class ComputerPlayer {
             handValue = handValue < 0 ? 0 : handValue;
             choice = tables.CheckHardTable(handValue, dealerCard);
         }
-        if (!this.playerRef.CanDD && choice == "double")
-            choice = GetHand.GetHandValue() == 18 ? "stand" : "hit"; //Correcting double down if not possible
+        if (!this.playerRef.canDD && choice == "double")
+            choice = targetHand.GetHandValue() == 18 ? "stand" : "hit"; //Correcting double down if not possible
         return choice;
     }
 

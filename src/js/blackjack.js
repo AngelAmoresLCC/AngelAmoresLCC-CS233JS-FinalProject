@@ -50,7 +50,7 @@ export class Table {
         for (let player of this.players) {
             if (!player.active)
                 this.interfaces[player.playerID - 1] = new ComputerPlayer(this, player.playerID);
-                player.active = true;
+                player.ChangeActiveness(true);
         }
     }
 
@@ -88,6 +88,7 @@ export class Table {
 
     BeginRound() {
         console.log("Beginning round");
+        this.currentPlayer = "dealing";
         for (let i = 0; i < 2; i++) {
             for (let player of this.players) {
                 if (player.active) {
@@ -100,14 +101,17 @@ export class Table {
             this.dealer.Deal(this.dealer.hand);
         }
         this.UpdateDisplayStates();
-        this.ContinueRound();
+        setTimeout(() => {
+            this.currentPlayer = 0;
+            this.ContinueRound();
+        }, 1500);
     }
 
     ContinueRound() {
         console.log("Continuing round");
         do {
             this.currentPlayer++;
-            if (this.currentPlayer >= this.players.length) {
+            if (this.currentPlayer > this.players.length) {
                 this.DealerTurn();
                 return;
             }
@@ -117,6 +121,7 @@ export class Table {
     }
 
     //This is a failsafe to make sure that the game continues even if the interface is broken somehow
+    //Realistically this would only matter in a server-side implementation
     //TODO: Implement removing 'dead' interfaces such that they cannot rejoin with a valid ID if they come back
     BeginTurnCountDown() {
         this.turnCountdowner = setTimeout(() => {
@@ -226,8 +231,14 @@ export class Table {
                     coins: player.coins,
                     currentBet: player.currentBet,
                     mainHandCards: player.hand.HandString(), //Update to newer display solution later
+                    mainHandValue: player.hand.GetHandValue(),
+                    mainHandIsSoft: player.hand.hasLiveAce,
+                    mainHandHardValue: player.hand.GetHardValue(),
                     isSplit: player.IsSplit(),
                     splitHandCards: player.IsSplit() ? player.splitHand.HandString() : null, //Update to newer display solution later
+                    splitHandValue: player.IsSplit() ? player.splitHand.GetHandValue() : 0,
+                    splitHandIsSoft: player.IsSplit() ? player.splitHand.hasLiveAce : false,
+                    splitHandHardValue: player.IsSplit() ? player.splitHand.GetHardValue() : 0,
                 }
             }
         }
@@ -275,8 +286,8 @@ export class Table {
     //Called by user interface, checks if the request is viable and passes it to the corresponding player if so
     //Can also be called by a computer player
     RequestAction(action, playerID) {
-        console.log(action);
         if (playerID == this.currentPlayer) {
+            //console.log(action);
             clearTimeout(this.turnCountdowner);
             if (this.targetHand == "main") {
                 if (this.GetPlayer(playerID).HandleChoice(action)) {
@@ -284,14 +295,14 @@ export class Table {
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).hand.IsBusted()) {
                         if (this.GetPlayer(playerID).IsSplit()) {
                             if (this.GetPlayer(playerID).hand.CheckCard(0).IsAce())
-                                this.ContinueRound();
+                                this.DelayContinue();
                             else {
                                 this.targetHand = "split";
                                 this.BeginTurnCountDown();
                             }
                         }
                         else
-                            this.ContinueRound();
+                            this.DelayContinue();
                     }
                     else
                         this.BeginTurnCountDown();
@@ -302,13 +313,19 @@ export class Table {
                     this.UpdateDisplayStates();
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).splitHand.IsBusted()) {
                         this.targetHand = "main";
-                        this.ContinueRound();
+                        this.DelayContinue();
                     }
                     else
                         this.BeginTurnCountDown();
                 }
             }
         }
+    }
+
+    DelayContinue() {
+        setTimeout(() => {
+            this.ContinueRound();
+        }, 500);
     }
 
     //Called by user interface, changes the name of the corresponding playerID

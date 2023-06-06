@@ -50,7 +50,7 @@ export class Hand {
 
     GetHardValue() {
         let handValue = 0;
-        for (const card of hand) {
+        for (const card of this.hand) {
             if (card.IsFaceCard())
                 handValue += 10;
             else

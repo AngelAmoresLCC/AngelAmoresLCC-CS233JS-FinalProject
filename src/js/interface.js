@@ -69,10 +69,7 @@ export class Interface {
 
     Action(action) {
         this.table.RequestAction(action, this.playerID);
-        document.getElementById("timer").style.visibility = "hidden";
-        clearInterval(this.turnTimer);
-        this.turnTimer = null;
-        this.CheckUpdateDisplay();
+        this.RemoveTurnTimer();
     }
 
     ChangeName() {
@@ -174,6 +171,8 @@ export class Interface {
         this.table.currentPlayer == this.playerID ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
         if (this.table.currentPlayer == this.playerID && this.turnTimer == null)
             this.StartTurnTimer();
+        else
+            this.RemoveTurnTimer();
         this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
         this.betting.style.display = this.table.isBetting ? "block" : "none";
         if (this.playerID == -1) {
@@ -228,6 +227,12 @@ export class Interface {
         document.getElementById("timer-count").innerHTML = --this.turnLength;
         if (this.turnLength <= 0)
             this.Action("stand");
+    }
+
+    RemoveTurnTimer() {
+        document.getElementById("timer").style.visibility = "hidden";
+        clearInterval(this.turnTimer);
+        this.turnTimer = null;
     }
 
     EnterQueue() {
