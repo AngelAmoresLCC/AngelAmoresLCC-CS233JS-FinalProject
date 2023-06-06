@@ -99,17 +99,21 @@ export class OddsTables {
     }
 
     CheckHardTable(playerCard, dealerCard) {
+        console.log("Checking hard table: " + playerCard + ", " + dealerCard);
         return this.hardTable[playerCard][dealerCard];
     }
 
     CheckSoftTable(playerCard, dealerCard) {
+        console.log("Checking soft table: " + playerCard + ", " + dealerCard);
         return this.softTable[playerCard][dealerCard];
     }
 
     CheckSplitTable(playerCard, dealerCard) {
+        console.log("Checking split table: " + playerCard + ", " + dealerCard);
         return this.splitTable[playerCard][dealerCard];
     }
 }
 
 //An issue with CheckSoftTable after splitting
 //An issue with removing computer players (not that it can do that yet)
+//Fix displaying busted hands when the hand is split

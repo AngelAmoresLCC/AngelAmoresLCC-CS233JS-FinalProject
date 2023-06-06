@@ -64,7 +64,7 @@ export class ComputerPlayer {
     }
 
     GetBet() {
-        return Math.min(50, this.playerRef.coins);
+        return Math.min(10, this.playerRef.coins); //Correct bet amount back to 150, this is just for testing purposes
     }
 
     GetAction() {
@@ -95,6 +95,7 @@ export class ComputerPlayer {
     }
 
     LeaveTable() {
-
+        this.tableRef.GetPlayer(this.playerID).ChangeActiveness(false);
+        this.playerID = -1;
     }
 }

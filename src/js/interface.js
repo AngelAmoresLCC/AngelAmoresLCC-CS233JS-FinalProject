@@ -68,6 +68,10 @@ export class Interface {
     }
 
     Action(action) {
+        this.hitButton.setAttribute('disabled', true);
+        this.standButton.setAttribute('disabled', true);
+        this.doubleButton.setAttribute('disabled', true);
+        this.splitButton.setAttribute('disabled', true);
         this.table.RequestAction(action, this.playerID);
         this.RemoveTurnTimer();
     }
