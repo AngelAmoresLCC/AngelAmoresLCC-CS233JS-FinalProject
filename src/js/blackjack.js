@@ -50,7 +50,7 @@ export class Table {
         for (let player of this.players) {
             if (!player.active)
                 this.interfaces[player.playerID - 1] = new ComputerPlayer(this, player.playerID);
-                player.ChangeActiveness(true);
+            player.ChangeActiveness(true);
         }
     }
 
@@ -292,14 +292,13 @@ export class Table {
             if (this.targetHand == "main") {
                 if (this.GetPlayer(playerID).HandleChoice(action)) {
                     this.UpdateDisplayStates();
+                    if (this.GetPlayer(playerID).IsSplit())
+                        if (this.GetPlayer(playerID).hand.CheckCard(0).IsAce())
+                            this.DelayContinue();
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).hand.IsBusted()) {
                         if (this.GetPlayer(playerID).IsSplit()) {
-                            if (this.GetPlayer(playerID).hand.CheckCard(0).IsAce())
-                                this.DelayContinue();
-                            else {
                                 this.targetHand = "split";
                                 this.BeginTurnCountDown();
-                            }
                         }
                         else
                             this.DelayContinue();

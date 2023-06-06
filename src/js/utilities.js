@@ -114,6 +114,15 @@ export class OddsTables {
     }
 }
 
-//An issue with CheckSoftTable after splitting
+//An issue with CheckSoftTable after splitting //FIXED
 //An issue with removing computer players (not that it can do that yet)
+
 //Fix displaying busted hands when the hand is split
+
+//Preemptive fix needed for computer bets that aren't divisible by 10
+//Ex. computer has 45 coins, so tries to go all in and bet 45
+
+//Computers are making too much money, they cant fail
+//Increase their bet amount so a losing streak means they're gone quicker
+
+//Need a button to immediately leave the table at any time
