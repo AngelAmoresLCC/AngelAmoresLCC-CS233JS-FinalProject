@@ -143,7 +143,17 @@ export class Interface {
                 }
                 else
                     document.getElementById(playerString).classList.remove("inactive-player");
-                if (info.busted) {
+                if (info.mainHandBusted)
+                    document.getElementById(playerString + "-main").classList.add("busted-hand");
+                else
+                    document.getElementById(playerString + "-main").classList.remove("busted-hand");
+                if (info.isSplit) {
+                    if (info.splitHandBusted)
+                        document.getElementById(playerString + "-split").classList.add("busted-hand");
+                    else
+                        document.getElementById(playerString + "-split").classList.remove("busted-hand");
+                }
+                if (info.mainHandBusted && info.splitHandBusted) {
                     document.getElementById(playerString + "-box").classList.add("busted-player");
                     document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
@@ -159,12 +169,30 @@ export class Interface {
                 document.getElementById(playerString + "-coins").innerHTML = info.coins;
 
                 document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
+                document.getElementById(playerString + "-hand-value").innerHTML = info.mainHandIsSoft ? `${info.mainHandValue}(${info.mainHandHardValue})` : info.mainHandValue;
                 //Oh god fix the split hand display it's so messed up
                 if (info.isSplit) {
-                    document.getElementById(playerString + "-split").style.display = "inline";
+                    document.getElementById(playerString + "-hand-divider").classList.remove("d-none");
+                    document.getElementById(playerString + "-split").style.display = "block";
                     document.getElementById(playerString + "-splitHand").innerHTML = info.splitHandCards;
+                    document.getElementById(playerString + "-splitHand-value").innerHTML = info.splitHandIsSoft ? `${info.splitHandValue}(${info.splitHandHardValue})` : info.splitHandValue;
+                    if (this.table.currentPlayer == info.id) {
+                        if (this.table.targetHand == "main") {
+                            document.getElementById(playerString + "-main").classList.add("current-hand");
+                            document.getElementById(playerString + "-split").classList.remove("current-hand");
+                        }
+                        else if (this.table.targetHand == "split") {
+                            document.getElementById(playerString + "-main").classList.remove("current-hand");
+                            document.getElementById(playerString + "-split").classList.add("current-hand");
+                        }
+                    }
+                    else {
+                        document.getElementById(playerString + "-main").classList.remove("current-hand");
+                        document.getElementById(playerString + "-split").classList.remove("current-hand");
+                    }
                 }
                 else {
+                    document.getElementById(playerString + "-hand-divider").classList.add("d-none");
                     document.getElementById(playerString + "-split").style.display = "none";
                     document.getElementById(playerString + "-splitHand").innerHTML = "";
                 }

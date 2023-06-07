@@ -225,7 +225,6 @@ export class Table {
                     id: player.playerID,
                     active: player.active,
                     name: player.name,
-                    busted: player.hand.IsBusted(),
                     canDD: player.CanDD(),
                     canSplit: player.CanSplit(),
                     coins: player.coins,
@@ -234,11 +233,13 @@ export class Table {
                     mainHandValue: player.hand.GetHandValue(),
                     mainHandIsSoft: player.hand.hasLiveAce,
                     mainHandHardValue: player.hand.GetHardValue(),
+                    mainHandBusted: player.hand.IsBusted(),
                     isSplit: player.IsSplit(),
                     splitHandCards: player.IsSplit() ? player.splitHand.HandString() : null, //Update to newer display solution later
                     splitHandValue: player.IsSplit() ? player.splitHand.GetHandValue() : 0,
                     splitHandIsSoft: player.IsSplit() ? player.splitHand.hasLiveAce : false,
                     splitHandHardValue: player.IsSplit() ? player.splitHand.GetHardValue() : 0,
+                    splitHandBusted: player.IsSplit() ? player.splitHand.IsBusted() : true,
                 }
             }
         }
@@ -297,8 +298,8 @@ export class Table {
                             this.DelayContinue();
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).hand.IsBusted()) {
                         if (this.GetPlayer(playerID).IsSplit()) {
-                                this.targetHand = "split";
-                                this.BeginTurnCountDown();
+                            this.targetHand = "split";
+                            this.BeginTurnCountDown();
                         }
                         else
                             this.DelayContinue();
@@ -311,18 +312,20 @@ export class Table {
                 if (this.GetPlayer(playerID).HandleChoice(action)) {
                     this.UpdateDisplayStates();
                     if (action == "stand" || action == "double" || this.GetPlayer(playerID).splitHand.IsBusted()) {
-                        this.targetHand = "main";
+                        this.targetHand = "none";
                         this.DelayContinue();
                     }
                     else
                         this.BeginTurnCountDown();
                 }
             }
+            this.UpdateDisplayStates();
         }
     }
 
     DelayContinue() {
         setTimeout(() => {
+            this.targetHand = "main";
             this.ContinueRound();
         }, 500);
     }

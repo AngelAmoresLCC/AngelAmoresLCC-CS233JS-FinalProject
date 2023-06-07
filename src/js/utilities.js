@@ -114,6 +114,5 @@ export class OddsTables {
     }
 }
 
-//Fix displaying split hands
-//Cut my losses, just put it below the main hand, vertical stack
-//Fix displaying busted hands when the hand is split
+//Split hand is still messed up with the border
+//Turn timer after splitting is messed up

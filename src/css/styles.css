@@ -30,12 +30,20 @@
 .hand-box {
     margin: 5px;
     padding: 5px;
-    display: inline;
-    /*border-style: solid;*/
+    display: block;
+    border-style: solid;
     border-color: lightgray;
     border-width: 3px;
     border-radius: 3px;
-    /*Border messes up, find a way to fix it*/
+}
+
+.current-hand {
+    border-color: rgb(255, 230, 92);
+}
+
+.busted-hand {
+    border-color: rgb(255, 84, 84);
+    border-width: 5px;
 }
 
 .true-center {

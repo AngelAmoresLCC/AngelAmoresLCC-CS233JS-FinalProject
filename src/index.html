@@ -48,25 +48,29 @@
                     <div id="user-box" class="box">
                         <input id="user-name" value="User Name" maxlength="16"
                             style="text-align:center; background-color:inherit; width:fit-content;"></input><br>
-                        <span style="font-weight:normal;">Player <span id="user-id">-1</span></span><br>
+                        <span style="font-weight:normal;">Player <span id="user-id">-1</span></span>
                         <!--
                         <div id="user-hand">
                             This has more space to work with, but I still don't know how I'll format this
                         </div>
                         -->
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
+                            <hr>
+                            <div id="user-main" class="hand-box">
                                 <div>
                                     Hand: <span id="user-hand"></span>
                                 </div>
                                 <br>
                                 Hand value: <span id="user-hand-value"></span>
                             </div>
+                            <hr id="user-hand-divider" class="d-none">
                             <div id="user-split" class="hand-box">
                                 Split hand: <span id="user-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="user-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         <!--This will become identical to the main hand display, with its own value summary-->
                         Current bet: <span id="user-currentBet">0</span><br>
                         Coins: <span id="user-coins">1000</span>
@@ -100,23 +104,30 @@
                     </div>
                 </div>
             </div>
-            <div id="spacer" class="row d-flex d-none">
-                <div> <br><br><br> </div>
+            <div id="spacer" class="d-none"><div> <br><br><br> </div>
             </div>
             <div id="player123-row" class="row d-flex justify-content-center d-none">
                 <div id="player1" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player1-box" class="box current-player">
                         <span id="player1-name">Player 1</span><br>
-                        <span style="font-weight:normal;">Player 1</span><br>
+                        <span style="font-weight:normal;">Player 1</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player1-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player1-main">
+                                <div>
+                                    Hand: <span id="player1-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player1-hand-value"></span>
                             </div>
+                            <hr id="player1-hand-divider" class="d-none">
                             <div id="player1-split" class="hand-box">
                                 Split hand: <span id="player1-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player1-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player1-currentBet">0</span><br>
                         Coins: <span id="player1-coins">1000</span>
                     </div>
@@ -124,16 +135,24 @@
                 <div id="player2" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player2-box" class="box busted-player">
                         <span id="player2-name">Player 2</span><br>
-                        <span style="font-weight:normal;">Player 2</span><br>
+                        <span style="font-weight:normal;">Player 2</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player2-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player2-main">
+                                <div>
+                                    Hand: <span id="player2-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player2-hand-value"></span>
                             </div>
+                            <hr id="player2-hand-divider" class="d-none">
                             <div id="player2-split" class="hand-box">
                                 Split hand: <span id="player2-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player2-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player2-currentBet">0</span><br>
                         Coins: <span id="player2-coins">1000</span>
                     </div>
@@ -141,16 +160,24 @@
                 <div id="player3" name="player123" class="col-sm-4 d-flex justify-content-center">
                     <div id="player3-box" class="box">
                         <span id="player3-name">Player 3</span><br>
-                        <span style="font-weight:normal;">Player 3</span><br>
+                        <span style="font-weight:normal;">Player 3</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player3-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player3-main">
+                                <div>
+                                    Hand: <span id="player3-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player3-hand-value"></span>
                             </div>
+                            <hr id="player3-hand-divider" class="d-none">
                             <div id="player3-split" class="hand-box">
                                 Split hand: <span id="player3-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player3-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player3-currentBet">0</span><br>
                         Coins: <span id="player3-coins">1000</span>
                     </div>
@@ -160,16 +187,24 @@
                 <div id="player4" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player4-box" class="box">
                         <span id="player4-name">Player 4</span><br>
-                        <span style="font-weight:normal;">Player 4</span><br>
+                        <span style="font-weight:normal;">Player 4</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player4-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player4-main">
+                                <div>
+                                    Hand: <span id="player4-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player4-hand-value"></span>
                             </div>
+                            <hr id="player4-hand-divider" class="d-none">
                             <div id="player4-split" class="hand-box">
                                 Split hand: <span id="player4-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player4-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player4-currentBet">0</span><br>
                         Coins: <span id="player4-coins">1000</span>
                     </div>
@@ -177,16 +212,24 @@
                 <div id="player5" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player5-box" class="box">
                         <span id="player5-name">Player 5</span><br>
-                        <span style="font-weight:normal;">Player 5</span><br>
+                        <span style="font-weight:normal;">Player 5</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player5-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player5-main">
+                                <div>
+                                    Hand: <span id="player5-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player5-hand-value"></span>
                             </div>
+                            <hr id="player5-hand-divider" class="d-none">
                             <div id="player5-split" class="hand-box">
                                 Split hand: <span id="player5-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player5-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player5-currentBet">0</span><br>
                         Coins: <span id="player5-coins">1000</span>
                     </div>
@@ -194,16 +237,24 @@
                 <div id="player6" name="player456" class="col-sm-4 d-flex justify-content-center">
                     <div id="player6-box" class="box">
                         <span id="player6-name">Player 6</span><br>
-                        <span style="font-weight:normal;">Player 6</span><br>
+                        <span style="font-weight:normal;">Player 6</span>
                         <div name="hand-box" class="d-none">
-                            <br>
-                            <div class="hand-box">
-                                Hand: <span id="player6-hand"></span>
+                            <hr>
+                            <div class="hand-box" id="player6-main">
+                                <div>
+                                    Hand: <span id="player6-hand"></span>
+                                </div>
+                                <br>
+                                Hand value: <span id="player6-hand-value"></span>
                             </div>
+                            <hr id="player6-hand-divider" class="d-none">
                             <div id="player6-split" class="hand-box">
                                 Split hand: <span id="player6-splitHand"></span>
+                                <br>
+                                Split hand value: <span id="player6-splitHand-value"></span>
                             </div>
-                        </div><br>
+                        </div>
+                        <hr>
                         Current bet: <span id="player6-currentBet">0</span><br>
                         Coins: <span id="player6-coins">1000</span>
                     </div>
