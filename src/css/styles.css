@@ -31,7 +31,8 @@
     margin: 5px;
     padding: 5px;
     display: inline;
-    /*border-style: solid;*/
+    /*Change to inline-block*/
+    border-style: solid;
     border-color: lightgray;
     border-width: 3px;
     border-radius: 3px;
