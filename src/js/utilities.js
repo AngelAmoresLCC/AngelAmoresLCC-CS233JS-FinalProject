@@ -114,5 +114,5 @@ export class OddsTables {
     }
 }
 
-//Split hand is still messed up with the border
 //Turn timer after splitting is messed up
+//Turn timer is messed up in general

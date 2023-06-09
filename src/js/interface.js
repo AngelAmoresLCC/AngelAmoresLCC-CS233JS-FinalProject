@@ -25,6 +25,7 @@ export class Interface {
         this.abortSignal = new AbortController();
         window.onbeforeunload = this.LeaveTable();
         this.ChangeName = this.ChangeName.bind(this);
+        this.LoadDog();
     }
 
     SetupPlay(playerID) {
@@ -356,5 +357,29 @@ export class Interface {
         document.getElementById("queue").classList.remove("d-none");
         document.getElementById("queue-pos-text").style.display = "none";
         this.CheckUpdateDisplay();
+    }
+
+    LoadDog() {
+        fetch("https://random.dog/woof.json")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+
+                if (data.fileSizeBytes > 1000000) {
+                    console.log("Dog too big.");
+                    this.LoadDog();
+                }
+                else if (data.fileSizeBytes < 10000) {
+                    console.log("Dog too small.");
+                    this.LoadDog();
+                }
+                else if (data.url.match(/gif/)) {
+                    console.log("Dog moves too much.");
+                    this.LoadDog();
+                }
+                else {
+                    document.getElementById("dog").innerHTML = `<img src=${data.url} alt="A dog" width="95%"></img>`
+                }
+            })
     }
 }
