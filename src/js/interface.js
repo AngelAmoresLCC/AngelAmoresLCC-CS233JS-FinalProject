@@ -257,7 +257,7 @@ export class Interface {
         }
 
         //If the user is the current player, start the turn timer if it does not exist
-        if (this.table.currentPlayer == this.playerID && this.turnTimer == null)
+        if (this.table.currentPlayer == this.playerID)
             this.StartTurnTimer();
         else
             this.RemoveTurnTimer();
@@ -310,8 +310,7 @@ export class Interface {
     }
 
     StartTurnTimer() {
-        clearInterval(this.turnTimer);
-        this.turnTimer = null;
+        this.RemoveTurnTimer();
         this.turnLength = 15;
         document.getElementById("timer-count").innerHTML = this.turnLength;
         document.getElementById("timer").style.visibility = "visible";
@@ -363,8 +362,6 @@ export class Interface {
         fetch("https://random.dog/woof.json")
             .then(response => response.json())
             .then(data => {
-                console.log(data);
-
                 if (data.fileSizeBytes > 1000000) {
                     console.log("Dog too big.");
                     this.LoadDog();
