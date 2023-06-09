@@ -30,7 +30,10 @@
 .hand-box {
     margin: 5px;
     padding: 5px;
-    display: block;
+    padding-left: 10px;
+    padding-right:10px;
+    height: auto;
+    display: inline-block;
     border-style: solid;
     border-color: lightgray;
     border-width: 3px;
@@ -45,6 +48,12 @@
     border-color: rgb(255, 84, 84);
     border-width: 5px;
 }
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
 .true-center {
     margin: 0;

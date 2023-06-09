@@ -101,154 +101,206 @@ export class Interface {
     }
 
     //Updates all displayed information on the page, then updates the current displayID
-    //TODO: Comment each part of this monstrosity
     UpdateDisplay(displayInfoArray) {
+        //---ALL PLAYERS AND DEALER---//
         for (const info of displayInfoArray) {
-            let id = info.id;
-            let playerString = `player${id}`;
-            if (id === "dealer") {
-                playerString = "dealer";
+            let id = info.id; //Gets the player ID
+            let playerString = `player${id}`; //This string is the prefix of all elements attached to that player ID
+
+            if (id === "dealer") { //Section for updating the dealer's information
+                playerString = "dealer"; //Changes prefix for dealer elements
+
+                //Checks if the dealer is busted or not
                 if (info.busted) {
                     document.getElementById(playerString + "-box").classList.add("busted-player");
                     document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
                 else {
                     document.getElementById(playerString + "-box").classList.remove("busted-player");
+                    //Checks if the dealer is the current player or not
                     if (id === this.table.currentPlayer)
                         document.getElementById(playerString + "-box").classList.add("current-player");
                     else
                         document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
+
+                //Displays the dealer's cards
                 if (this.table.currentPlayer == id)
-                    document.getElementById(playerString + "-hand").innerHTML = info.cards;
+                    document.getElementById(playerString + "-hand").innerHTML = info.cards; //Shows all cards
                 else
-                    document.getElementById(playerString + "-hand").innerHTML = info.upCard;
+                    document.getElementById(playerString + "-hand").innerHTML = info.upCard; //Only shows one card
             }
-            else {
-                if (id === this.playerID) {
+            else { //Updates all other players' information
+                if (id === this.playerID) { //Updates information specific to the user
                     id = "user";
-                    document.getElementById(id + "-id").innerHTML = this.playerID;
-                    this.betInput.max = info.coins;
-                    this.currentCoins = info.coins;
+                    playerString = id; //Changes prefix for user elements
+                    document.getElementById(playerString + "-id").innerHTML = this.playerID; //Displays which player ID the user has
+                    this.betInput.max = info.coins; //Updates user's max bet amount
+                    this.currentCoins = info.coins; //Updates the interface's current coins counter
+
+                    //---INPUTS---//
+
+                    //Activates / deactivates the hit button
+                    (this.canAct && this.table.currentPlayer == this.playerID) ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
+                    //Activates / deactivates the stand button
+                    (this.canAct && this.table.currentPlayer == this.playerID) ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
+                    //Shows / hides the double down button
                     this.doubleButton.style.display = info.canDD ? "inline" : "none";
+                    //Activates / deactivates the double down button
                     (this.canAct && info.canDD) ? this.doubleButton.removeAttribute('disabled') : this.doubleButton.setAttribute('disabled', true);
+                    //Updates double down button width to account for split button, if it is present
                     this.doubleButton.style.width = info.canSplit ? "45%" : "90%";
+                    //Shows / hides the split button
                     this.splitButton.style.display = info.canSplit ? "inline" : "none";
+                    //Activates / deactivates the split button
                     (this.canAct && info.canSplit) ? this.splitButton.removeAttribute('disabled') : this.splitButton.setAttribute('disabled', true);
-                    playerString = id;
                 }
+
+                //If the player is inactive, hides them and moves to the next player
                 if (!info.active) {
                     document.getElementById(playerString).classList.add("inactive-player");
                     continue;
                 }
-                else
+                else //Shows active players that were inactive
                     document.getElementById(playerString).classList.remove("inactive-player");
-                if (info.mainHandBusted)
-                    document.getElementById(playerString + "-main").classList.add("busted-hand");
+
+                //If this player is being controlled by the user, hide that player, otherwise show it
+                if (info.id == this.playerID)
+                    document.getElementById("player" + info.id).style.visibility = "collapse";
                 else
-                    document.getElementById(playerString + "-main").classList.remove("busted-hand");
-                if (info.isSplit) {
-                    if (info.splitHandBusted)
-                        document.getElementById(playerString + "-split").classList.add("busted-hand");
-                    else
-                        document.getElementById(playerString + "-split").classList.remove("busted-hand");
-                }
+                    document.getElementById("player" + info.id).style.visibility = "visible";
+
+                //If both hands are busted, show that the player is busted
                 if (info.mainHandBusted && info.splitHandBusted) {
                     document.getElementById(playerString + "-box").classList.add("busted-player");
                     document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
                 else {
                     document.getElementById(playerString + "-box").classList.remove("busted-player");
+                    //If the player isn't busted, show if this player is taking their turn or not
                     if (info.id === this.table.currentPlayer)
                         document.getElementById(playerString + "-box").classList.add("current-player");
                     else
                         document.getElementById(playerString + "-box").classList.remove("current-player");
                 }
+
+                //Updates this player's name
                 document.getElementById(playerString + "-name").innerHTML = info.name;
+                //Updates this player's current bet
                 document.getElementById(playerString + "-currentBet").innerHTML = info.currentBet;
+                //Updates this player's coins
                 document.getElementById(playerString + "-coins").innerHTML = info.coins;
 
-                document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
-                document.getElementById(playerString + "-hand-value").innerHTML = info.mainHandIsSoft ? `${info.mainHandValue}(${info.mainHandHardValue})` : info.mainHandValue;
-                //Oh god fix the split hand display it's so messed up
+                //---HANDS---//
+
+                //Shows if the main hand is busted or not
+                if (info.mainHandBusted)
+                    document.getElementById(playerString + "-main").classList.add("busted-hand");
+                else
+                    document.getElementById(playerString + "-main").classList.remove("busted-hand");
+                //If the split hand exists, show if it's busted or not
                 if (info.isSplit) {
-                    document.getElementById(playerString + "-hand-divider").classList.remove("d-none");
-                    document.getElementById(playerString + "-split").style.display = "block";
+                    if (info.splitHandBusted)
+                        document.getElementById(playerString + "-split").classList.add("busted-hand");
+                    else
+                        document.getElementById(playerString + "-split").classList.remove("busted-hand");
+                }
+
+                //Shows the main hand's cards
+                document.getElementById(playerString + "-hand").innerHTML = info.mainHandCards;
+                //Shows the main hand value. If it is a soft hand (contains an ace worth 11), show the hard value as well
+                document.getElementById(playerString + "-hand-value").innerHTML = info.mainHandIsSoft ? `${info.mainHandValue}(${info.mainHandHardValue})` : info.mainHandValue;
+
+                //If the split hand exists...
+                if (info.isSplit) {
+                    //Show the split hand section
+                    document.getElementById(playerString + "-split").style.display = "inline-block";
+                    //Show the split hand cards
                     document.getElementById(playerString + "-splitHand").innerHTML = info.splitHandCards;
+                    //Shows the split hand value. If it is a soft hand (contains an ace worth 11), show the hard value as well
                     document.getElementById(playerString + "-splitHand-value").innerHTML = info.splitHandIsSoft ? `${info.splitHandValue}(${info.splitHandHardValue})` : info.splitHandValue;
+                    //If this player is currently taking their turn...
                     if (this.table.currentPlayer == info.id) {
+                        //If they are playing on their main hand, highlight it
                         if (this.table.targetHand == "main") {
                             document.getElementById(playerString + "-main").classList.add("current-hand");
                             document.getElementById(playerString + "-split").classList.remove("current-hand");
                         }
-                        else if (this.table.targetHand == "split") {
-                            document.getElementById(playerString + "-main").classList.remove("current-hand");
-                            document.getElementById(playerString + "-split").classList.add("current-hand");
-                        }
+                        else //If they are playing on their split hand, highlight it
+                            if (this.table.targetHand == "split") {
+                                document.getElementById(playerString + "-main").classList.remove("current-hand");
+                                document.getElementById(playerString + "-split").classList.add("current-hand");
+                            }
                     }
-                    else {
+                    else { //If it is not their turn, remove highlights from both hands
                         document.getElementById(playerString + "-main").classList.remove("current-hand");
                         document.getElementById(playerString + "-split").classList.remove("current-hand");
                     }
                 }
-                else {
-                    document.getElementById(playerString + "-hand-divider").classList.add("d-none");
+                else { //Hide the split hand section if it does not exist
                     document.getElementById(playerString + "-split").style.display = "none";
                     document.getElementById(playerString + "-splitHand").innerHTML = "";
                 }
-
-                //document.getElementById(playerString).style.visibility = info.active ? "visible" : "collapse";
-                if (info.id == this.playerID)
-                    document.getElementById("player" + info.id).style.visibility = "collapse";
-                else
-                    document.getElementById("player" + info.id).style.visibility = "visible";
             }
         }
+
+        //---INFO AGNOSTIC---//
+
+        //Get all the hand boxes
         let handBoxes = document.getElementsByName("hand-box");
         for (let box of handBoxes) {
-            if (this.table.currentPlayer == 0)
+            if (this.table.currentPlayer == 0) //If no player is currently playing, hide them
                 box.classList.add("d-none");
             else
                 box.classList.remove("d-none");
         }
-        (this.canAct && this.table.currentPlayer == this.playerID) ? this.hitButton.removeAttribute('disabled') : this.hitButton.setAttribute('disabled', true);
-        (this.canAct && this.table.currentPlayer == this.playerID) ? this.standButton.removeAttribute('disabled') : this.standButton.setAttribute('disabled', true);
+
+        //If the user is the current player, start the turn timer if it does not exist
         if (this.table.currentPlayer == this.playerID && this.turnTimer == null)
             this.StartTurnTimer();
         else
             this.RemoveTurnTimer();
+
+        //If the user is the current player, show the action buttons
         this.actions.style.display = this.table.currentPlayer == this.playerID ? "block" : "none";
+
+        //If the table is betting, show the betting inputs
         this.betting.style.display = this.table.isBetting ? "block" : "none";
+
+        //If the user is not playing, hide the user elements, show the spacer, and show the queue button
         if (this.playerID == -1) {
             document.getElementById("user-row").classList.add("d-none");
             document.getElementById("spacer").classList.remove("d-none");
             document.getElementById("waiting").style.visibility = "visible";
         }
-        else {
+        else { //Otherwise do the opposite of that
             document.getElementById("user-row").classList.remove("d-none");
             document.getElementById("spacer").classList.add("d-none");
             document.getElementById("waiting").style.visibility = "hidden";
         }
+
+        //If players 1, 2, and 3 are all inactive, hide their row
         let players123 = document.getElementsByName("player123");
         let count = 0;
-        for (let player of players123) {
+        for (let player of players123)
             if (player.classList.contains("inactive-player"))
                 count++;
-        }
         if (count == 3)
             document.getElementById("player123-row").classList.add("d-none");
         else
             document.getElementById("player123-row").classList.remove("d-none");
+        //If players 4, 5, and 6 are all inactive, hide their row
         let players456 = document.getElementsByName("player456");
         count = 0;
-        for (let player of players456) {
+        for (let player of players456)
             if (player.classList.contains("inactive-player"))
                 count++;
-        }
         if (count == 3)
             document.getElementById("player456-row").classList.add("d-none");
         else
             document.getElementById("player456-row").classList.remove("d-none");
+
+        //Update the display ID to match the table's
         this.displayID = this.table.displayID;
     }
 
