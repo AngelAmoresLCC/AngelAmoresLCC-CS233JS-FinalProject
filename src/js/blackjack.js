@@ -123,6 +123,7 @@ export class Table {
     //This is a failsafe to make sure that the game continues even if the interface is broken somehow
     //Realistically this would only matter in a server-side implementation
     //TODO: Implement removing 'dead' interfaces such that they cannot rejoin with a valid ID if they come back
+    //Doesn't really matter at this point, so I won't bother. Just know that the functionality is possible
     BeginTurnCountDown() {
         this.turnCountdowner = setTimeout(() => {
             console.log("Player " + this.currentPlayer + " appears missing.");
@@ -208,6 +209,7 @@ export class Table {
         }, 1000);
     }
 
+    //Updates what the main table thinks the game should look like
     UpdateDisplayStates() {
         for (let i = 0; i <= this.players.length; i++) {
             if (i == 0) {
@@ -229,13 +231,13 @@ export class Table {
                     canSplit: player.CanSplit(),
                     coins: player.coins,
                     currentBet: player.currentBet,
-                    mainHandCards: player.hand.HandString(), //Update to newer display solution later
+                    mainHandCards: player.hand.HandString(),
                     mainHandValue: player.hand.GetHandValue(),
                     mainHandIsSoft: player.hand.hasLiveAce,
                     mainHandHardValue: player.hand.GetHardValue(),
                     mainHandBusted: player.hand.IsBusted(),
                     isSplit: player.IsSplit(),
-                    splitHandCards: player.IsSplit() ? player.splitHand.HandString() : null, //Update to newer display solution later
+                    splitHandCards: player.IsSplit() ? player.splitHand.HandString() : null,
                     splitHandValue: player.IsSplit() ? player.splitHand.GetHandValue() : 0,
                     splitHandIsSoft: player.IsSplit() ? player.splitHand.hasLiveAce : false,
                     splitHandHardValue: player.IsSplit() ? player.splitHand.GetHardValue() : 0,
@@ -244,26 +246,6 @@ export class Table {
             }
         }
         this.displayID = Math.random();
-    }
-
-    GetDisplayState(index, simple = true) {
-        if (simple && index != 0) {
-            state = this.displayStates[index];
-            return {
-                id: state.id,
-                active: state.active,
-                name: state.name,
-                busted: state.busted,
-                coins: state.coins,
-                currentBet: state.currentBet,
-                mainHandCards: state.mainHandCards,
-                isSplit: state.isSplit,
-                splitHandCards: state.splitHandCards,
-            }
-        }
-        else {
-            return this.displayStates[index];
-        }
     }
 
     GetPlayer(playerID) {
@@ -343,7 +325,7 @@ export class Table {
     }
 
     RemoveInterface(playerID) {
-        this.interfaces[this.playerID - 1].LeaveTable();
+        this.interfaces[playerID - 1].LeaveTable();
     }
 }
 

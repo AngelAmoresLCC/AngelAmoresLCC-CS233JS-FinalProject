@@ -110,6 +110,8 @@ export class Deck {
     }
 }
 
+//Some parts of the card functionality are not used (such as checking suits)
+//I'm keeping them though
 export class Card {
     constructor(cardValue, cardSuit) {
         this.value = cardValue;

@@ -113,6 +113,3 @@ export class OddsTables {
         return this.splitTable[playerCard][dealerCard];
     }
 }
-
-//Turn timer after splitting is messed up
-//Turn timer is messed up in general

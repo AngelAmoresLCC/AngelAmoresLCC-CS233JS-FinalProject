@@ -16,7 +16,7 @@ export class Dealer {
     }
 
     Deal(hand) {
-        hand.AddCard(this.deck.Draw()); //Find a way to slow down dealing, async and await?
+        hand.AddCard(this.deck.Draw());
     }
 
     UpCardValue() {
